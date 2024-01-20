@@ -1,0 +1,6 @@
+/.env
+/.venv
+/app.py
+/reminder.py
+/settings.py
+/__pycache__

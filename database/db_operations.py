@@ -6,6 +6,7 @@ DB_DIR = 'database'
 DB_NAME = 'studytime.sqlite3'
 DB_FILE = ROOT_DIR / DB_DIR / DB_NAME
 TASK_TABLE = 'tasks'
+REPEAT_DAYS_TABLE = 'repeat_days'
 
 
 # Create a connection to the SQLite database
@@ -30,6 +31,21 @@ def save_task_to_database(task):
         connection.close()
 
 
+def save_repeat_days_to_database(days):
+    connection = establish_connection()
+    try:
+        task_id = get_last_task()
+        cursor = connection.cursor()
+        for day in days:
+            cursor.execute(f"INSERT INTO {REPEAT_DAYS_TABLE} (task_id, day_number) VALUES (?, ?)",
+                            (task_id, day))
+        connection.commit()
+    except Exception as e:
+        print(f"Error inserting task days into the database: {e}")
+    finally:
+        connection.close()
+
+
 def get_task_by_id(task_id):
     connection = establish_connection()
     try:
@@ -42,6 +58,18 @@ def get_task_by_id(task_id):
     finally:
         connection.close()
 
+def get_last_task():
+    connection = establish_connection()
+    try:
+        cursor = connection.cursor()
+        cursor.execute(f'SELECT * FROM {TASK_TABLE}')
+        cursor.lastrowid
+        task_id = cursor.fetchone()
+        return task_id[0]
+    except Exception as e:
+        print(f"Error fetching task from database: {e}")
+    finally:
+        connection.close()
 
 def update_task_in_database(task_id, name, description, start_date, duration, is_repeatable):
     connection = establish_connection()

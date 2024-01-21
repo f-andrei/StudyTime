@@ -1,4 +1,6 @@
 import discord
+from discord import ButtonStyle, Interaction
+from discord.ui import Button, View
 from discord.ext import commands, tasks
 from datetime import datetime, timedelta
 import asyncio
@@ -10,7 +12,7 @@ from tasks import Task
 from pathlib import Path
 from time import sleep
 from utils import new_task_filter
-from database.db_operations import get_task_by_id
+from database.db_operations import get_task_by_id, save_repeat_days_to_database, get_last_task
 
 load_dotenv()
 token = os.getenv('DISCORD_TOKEN')
@@ -40,6 +42,7 @@ async def on_ready():
 	print("StudyTime bot is in " + str(guild_count) + " guilds.")
 	check_tasks.start()
 	statusloop.start()
+	
 
 @bot.event
 async def on_message(message):
@@ -59,11 +62,16 @@ async def create_task(ctx, *, new_task):
 	try:
 		task = Task()
 		filtered_task = new_task_filter(new_task)
+		task.create_task(*filtered_task)
 		_, _, _, _, is_repeatable = filtered_task
-		print(is_repeatable)
 		if is_repeatable == 1:
-			...
-		await ctx.send('Task created sucessfully.')
+			#inv=await ctx.channel.create_invite()
+			#await ctx.send("click to invite!", view=Invitebutton(str(inv)))
+			view=DaysToRepeatView()
+			await ctx.send("Select which days to repeat", view=view)
+		else:
+			await ctx.send('Task created sucessfully.')
+		return
 	except Exception as e:
 		await ctx.send(f"An error occurred: {e}")
 
@@ -141,11 +149,72 @@ async def check_tasks():
 
 @tasks.loop(seconds=10)
 async def statusloop():
-    await bot.wait_until_ready()
-    await bot.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.watching, name=f".help"))
-    await asyncio.sleep(10)
-    await bot.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.watching, name=f"you study..."))
-    await asyncio.sleep(10)
+	await bot.wait_until_ready()
+	await bot.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.watching, name=f".help"))
+	await asyncio.sleep(10)
+	await bot.change_presence(status=discord.Status.online, activity=discord.Activity(type=discord.ActivityType.watching, name=f"you study..."))
+	await asyncio.sleep(10)
+
+
+class DaysToRepeatView(discord.ui.View):
+    def __init__(self):
+        super().__init__()
+        self.days = []
+
+    @discord.ui.button(label="Monday", style=discord.ButtonStyle.blurple)
+    async def monday(self, interaction: discord.Interaction, button: discord.ui.Button):
+        self.days.append(1)
+        button.disabled = True
+        await interaction.response.edit_message(view=self)
+
+    @discord.ui.button(label="Tuesday", style=discord.ButtonStyle.blurple)
+    async def tuesday(self, interaction: discord.Interaction, button: discord.ui.Button):
+        self.days.append(2)
+        button.disabled = True
+        await interaction.response.edit_message(view=self)
+
+    @discord.ui.button(label="Wednesday", style=discord.ButtonStyle.blurple)
+    async def wednesday(self, interaction: discord.Interaction, button: discord.ui.Button):
+        self.days.append(3)
+        button.disabled = True
+        await interaction.response.edit_message(view=self)
+
+    @discord.ui.button(label="Thursday", style=discord.ButtonStyle.blurple)
+    async def thursday(self, interaction: discord.Interaction, button: discord.ui.Button):
+        self.days.append(4)
+        button.disabled = True
+        await interaction.response.edit_message(view=self)
+
+    @discord.ui.button(label="Friday", style=discord.ButtonStyle.blurple)
+    async def friday(self, interaction: discord.Interaction, button: discord.ui.Button):
+        self.days.append(5)
+        button.disabled = True
+        await interaction.response.edit_message(view=self)
+
+    @discord.ui.button(label="Saturday", style=discord.ButtonStyle.blurple)
+    async def saturday(self, interaction: discord.Interaction, button: discord.ui.Button):
+        self.days.append(6)
+        button.disabled = True
+        await interaction.response.edit_message(view=self)
+
+    @discord.ui.button(label="Sunday", style=discord.ButtonStyle.blurple)
+    async def sunday(self, interaction: discord.Interaction, button: discord.ui.Button):
+        self.days.append(0)
+        button.disabled = True
+        await interaction.response.edit_message(view=self)
+
+    @discord.ui.button(label="Reset All", style=discord.ButtonStyle.red)
+    async def reset_all(self, interaction: discord.Interaction, button: discord.ui.Button):
+        for child in self.children:
+            if isinstance(child, discord.ui.Button) and child.label != "Reset All":
+                child.disabled = False
+        await interaction.response.edit_message(view=self)
+
+    @discord.ui.button(label="Send", style=discord.ButtonStyle.success)
+    async def send(self, interaction: discord.Interaction, button: discord.ui.Button):
+        save_repeat_days_to_database(self.days)
+        await interaction.response.send_message(f"Task create sucessfully.")
+
 
 
 bot.run(token)

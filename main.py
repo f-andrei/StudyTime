@@ -1,6 +1,4 @@
 import discord
-from discord import ButtonStyle, Interaction
-from discord.ui import Button, View
 from discord.ext import commands, tasks
 from datetime import datetime, timedelta
 import asyncio
@@ -10,7 +8,6 @@ import sqlite3
 from pytz import timezone
 from tasks import Task
 from pathlib import Path
-from time import sleep
 from utils import new_task_filter
 from database.db_operations import get_task_by_id, save_repeat_days_to_database, get_last_task
 
@@ -33,13 +30,12 @@ bot = commands.Bot(command_prefix='.', intents=intents)
 
 @bot.event
 async def on_ready():
-	guild_count = 0
+	servers_count = 0
+	for server in bot.guilds:
+		print(f"- {server.id} (name: {server.name})")
+		servers_count = servers_count + 1
 
-	for guild in bot.guilds:
-		print(f"- {guild.id} (name: {guild.name})")
-		guild_count = guild_count + 1
-
-	print("StudyTime bot is in " + str(guild_count) + " guilds.")
+	print("StudyTime bot is in " + str(servers_count) + " servers.")
 	check_tasks.start()
 	statusloop.start()
 	
@@ -58,15 +54,32 @@ async def on_message(message):
 
 
 @bot.command()
-async def create_task(ctx, *, new_task):
+async def create_task(ctx):
 	try:
+		await ctx.send(embed=discord.Embed(
+			title="Create Task",
+			description="**Required Fields**\n"
+						"***Name***\n```Study```\n"
+						"***Description***\n```Study Python```\n"
+						"***Start Date***\n```2024-01-21T21:00:00```\n"
+						"***Duration (minutes)***\n```30```\n"
+						"***Is Repeatable (1 or 0) for True or False***\n```1```\n"
+						"***Example Usage***\n"
+						"```Study, Study Python, 2024-01-21T21:00:00, 30, 1```\n"
+						"*Ensure that the string above is passed to the program as "
+						"a single, continuous sequence with each value separated by commas.*"))
+		await ctx.send("Waiting for your message containing the required fields...")
+		while True:
+			msg = await bot.wait_for("message")
+			if (msg.author == ctx.author):
+				new_task = msg.content
+				new_task = str(new_task)
+				break
 		task = Task()
 		filtered_task = new_task_filter(new_task)
 		task.create_task(*filtered_task)
 		_, _, _, _, is_repeatable = filtered_task
 		if is_repeatable == 1:
-			#inv=await ctx.channel.create_invite()
-			#await ctx.send("click to invite!", view=Invitebutton(str(inv)))
 			view=DaysToRepeatView()
 			await ctx.send("Select which days to repeat", view=view)
 		else:
@@ -146,7 +159,6 @@ async def check_tasks():
 			await channel.send(f"An error occurred: {e}")
 
 
-
 @tasks.loop(seconds=10)
 async def statusloop():
 	await bot.wait_until_ready()
@@ -213,8 +225,7 @@ class DaysToRepeatView(discord.ui.View):
     @discord.ui.button(label="Send", style=discord.ButtonStyle.success)
     async def send(self, interaction: discord.Interaction, button: discord.ui.Button):
         save_repeat_days_to_database(self.days)
-        await interaction.response.send_message(f"Task create sucessfully.")
-
+        await interaction.response.send_message(f"Task created sucessfully.")
 
 
 bot.run(token)

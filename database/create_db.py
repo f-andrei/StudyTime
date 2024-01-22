@@ -42,7 +42,7 @@ cur.execute(
     '('
     'task_id INTEGER, '
     'day_number INTEGER, '
-    'PRIMARY KEY (task_id, day_number), '
+    'PRIMARY KEY (task_id), '
     f'FOREIGN KEY (task_id) REFERENCES {REPEAT_DAYS} (task_id)'
     ')'
 )

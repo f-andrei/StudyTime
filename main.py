@@ -217,6 +217,7 @@ class DaysToRepeatView(discord.ui.View):
 
     @discord.ui.button(label="Reset All", style=discord.ButtonStyle.red)
     async def reset_all(self, interaction: discord.Interaction, button: discord.ui.Button):
+        self.days.clear()
         for child in self.children:
             if isinstance(child, discord.ui.Button) and child.label != "Reset All":
                 child.disabled = False

@@ -62,14 +62,17 @@ def get_last_task():
     connection = establish_connection()
     try:
         cursor = connection.cursor()
-        cursor.execute(f'SELECT * FROM {TASK_TABLE}')
-        cursor.lastrowid
-        task_id = cursor.fetchone()
-        return task_id[0]
+        cursor.execute(f'SELECT * FROM {TASK_TABLE} ORDER BY id DESC LIMIT 1')
+        task = cursor.fetchone()
+        if task:
+            return task[0]
+        else:
+            return None
     except Exception as e:
         print(f"Error fetching task from database: {e}")
     finally:
         connection.close()
+
 
 def update_task_in_database(task_id, name, description, start_date, duration, is_repeatable):
     connection = establish_connection()

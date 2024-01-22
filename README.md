@@ -20,7 +20,7 @@ O **StudyTime Discord Bot** é uma aplicação que está sendo desenvolvida para
 ## Como Utilizar
 
 1. **Comandos:**
-   - `.create_task [detalhes da tarefa]`: Cria uma nova tarefa.
+   - `.create_task`: Cria uma nova tarefa.
    - `.update_task [ID da tarefa] [novos detalhes]`: Atualiza uma tarefa existente.
    - `.tasks`: Lista todas as tarefas disponíveis.
    - `.delete_task [ID da tarefa]`: Deleta uma tarefa existente.

@@ -1,5 +1,7 @@
 import sqlite3
 from pathlib import Path
+from datetime import datetime, timedelta
+from pytz import timezone
 
 ROOT_DIR = Path(__file__).parent.parent
 DB_DIR = 'database'
@@ -17,87 +19,117 @@ def establish_connection():
 
 
 def save_task_to_database(task):
-    connection = establish_connection()
-    try:
-        cursor = connection.cursor()
-        cursor.execute(f"INSERT INTO {TASK_TABLE} (name, description, start_date, duration, is_repeatable) VALUES (?, ?, ?, ?, ?)",
-                       (task.name, task.description, task.start_date, task.duration, task.is_repeatable))
-        connection.commit()
-        task.task_id = cursor.lastrowid
-        print(f"Task '{task.name}' successfully inserted into the database.")
-    except Exception as e:
-        print(f"Error inserting task into the database: {e}")
-    finally:
-        connection.close()
+    with establish_connection() as connection:
+        try:
+            cursor = connection.cursor()
+            cursor.execute(f"INSERT INTO {TASK_TABLE} (name, description, start_date, duration, is_repeatable) VALUES (?, ?, ?, ?, ?)",
+                        (task.name, task.description, task.start_date, task.duration, task.is_repeatable))
+            connection.commit()
+            task.task_id = cursor.lastrowid
+            print(f"Task '{task.name}' successfully inserted into the database.")
+        except Exception as e:
+            print(f"Error inserting task into the database: {e}")
 
 
 def save_repeat_days_to_database(days):
-    connection = establish_connection()
-    try:
-        task_id = get_last_task()
-        cursor = connection.cursor()
-        for day in days:
-            cursor.execute(f"INSERT INTO {REPEAT_DAYS_TABLE} (task_id, day_number) VALUES (?, ?)",
-                            (task_id, day))
-        connection.commit()
-    except Exception as e:
-        print(f"Error inserting task days into the database: {e}")
-    finally:
-        connection.close()
+    with establish_connection() as connection:
+        try:
+            task_id = get_last_task()
+            cursor = connection.cursor()
+            for day in days:
+                cursor.execute(f"INSERT INTO {REPEAT_DAYS_TABLE} (task_id, day_number) VALUES (?, ?)",
+                                (task_id, day))
+            connection.commit()
+        except Exception as e:
+            print(f"Error inserting task days into the database: {e}")
 
 
 def get_task_by_id(task_id):
-    connection = establish_connection()
-    try:
-        cursor = connection.cursor()
-        cursor.execute(f'SELECT * FROM {TASK_TABLE} WHERE id=?', (task_id,))
-        task_data = cursor.fetchall()
-        return task_data
-    except Exception as e:
-        print(f"Error fetching task from database: {e}")
-    finally:
-        connection.close()
+    with establish_connection() as connection:
+        try:
+            cursor = connection.cursor()
+            cursor.execute(f'SELECT * FROM {TASK_TABLE} WHERE id=?', (task_id,))
+            task_data = cursor.fetchall()
+            return task_data
+        except Exception as e:
+            print(f"Error fetching task from database: {e}")
+
 
 def get_last_task():
-    connection = establish_connection()
-    try:
-        cursor = connection.cursor()
-        cursor.execute(f'SELECT * FROM {TASK_TABLE} ORDER BY id DESC LIMIT 1')
-        task = cursor.fetchone()
-        if task:
-            return task[0]
-        else:
-            return None
-    except Exception as e:
-        print(f"Error fetching task from database: {e}")
-    finally:
-        connection.close()
+    with establish_connection() as connection:
+        try:
+            cursor = connection.cursor()
+            cursor.execute(f'SELECT * FROM {TASK_TABLE} ORDER BY id DESC LIMIT 1')
+            task = cursor.fetchone()
+            if task:
+                return task[0]
+            else:
+                return None
+        except Exception as e:
+            print(f"Error fetching task from database: {e}")
+
+
+def get_all_tasks():
+    with establish_connection() as connection:
+        try:
+            cursor = connection.cursor()
+            cursor.execute(f'SELECT * FROM {TASK_TABLE} ORDER BY id DESC')
+            tasks = cursor.fetchall()
+            return tasks
+        except Exception as e:
+            print(f"Error fetching tasks from database: {e}")
 
 
 def update_task_in_database(task_id, name, description, start_date, duration, is_repeatable):
-    connection = establish_connection()
-    try:
-        cursor = connection.cursor()
-        cursor.execute(
-            f'UPDATE {TASK_TABLE} SET name=?, description=?, start_date=?, duration=?, '
-            'is_repeatable=? WHERE id=?',
-            (name, description, start_date, duration, is_repeatable, task_id)
-        )
-        connection.commit()
-    except Exception as e:
-        print(f"Error updating task in database: {e}")
-    finally:
-        connection.close()
+    with establish_connection() as connection:
+        try:
+            cursor = connection.cursor()
+            cursor.execute(
+                f'UPDATE {TASK_TABLE} SET name=?, description=?, start_date=?, duration=?, '
+                'is_repeatable=? WHERE id=?',
+                (name, description, start_date, duration, is_repeatable, task_id)
+            )
+            connection.commit()
+        except Exception as e:
+            print(f"Error updating task in database: {e}")
+
 
 
 def delete_task_from_database(task_id):
-    connection = establish_connection()
-    try:
-        cursor = connection.cursor()
-        cursor.execute(f'DELETE FROM {TASK_TABLE} WHERE id = ?', (task_id,))
-        connection.commit()
-        print(f"Task with ID {task_id} deleted successfully.")
-    except Exception as e:
-        print(f"Error deleting task from the database: {e}")
-    finally:
-        connection.close()
+    with establish_connection() as connection:
+        try:
+            cursor = connection.cursor()
+            cursor.execute(f'DELETE FROM {TASK_TABLE} WHERE id = ?', (task_id,))
+            connection.commit()
+            print(f"Task with ID {task_id} deleted successfully.")
+        except Exception as e:
+            print(f"Error deleting task from the database: {e}")
+
+
+def get_due_tasks():
+    sao_paulo = timezone('America/Sao_Paulo')
+    current_time_utc = datetime.utcnow()
+    current_time_sao_paulo = current_time_utc.replace(tzinfo=timezone('UTC')).astimezone(sao_paulo)
+    end_time_range = current_time_sao_paulo - timedelta(minutes=10)
+    start_time_range = current_time_sao_paulo + timedelta(seconds=10)
+    
+    with establish_connection() as connection:
+        try:
+            cursor = connection.cursor()
+            cursor.execute("SELECT * FROM tasks WHERE start_date BETWEEN ? AND ?",
+                           (end_time_range, start_time_range))
+            due_tasks = cursor.fetchall()
+        except Exception as e:
+            print(e)
+    return due_tasks
+
+
+def get_due_tasks_days(task_id):
+    with establish_connection() as connection:
+        try:
+            cursor = connection.cursor()
+            cursor.execute(f'SELECT * FROM repeat_days WHERE task_id=?', (task_id,))
+            task_days = cursor.fetchall()
+        except Exception as e:
+            print(e)
+    return task_days

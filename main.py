@@ -1,11 +1,19 @@
-from config import bot, TOKEN
-from commands import bot as commands_bot
-from events import bot as events_bot
-from buttons import bot as buttons_bot
+# main.py
+from config import TOKEN, bot
+import discord
+# from discord.ext import commands
+from commands import bot as bot_commands
+from events import Events
+import asyncio
+
+# startup_extensions = ["events"]
+
+@bot.event
+async def on_ready():
+    events_cog = Events(bot)
+    await events_cog.on_ready()
 
 
-if __name__ == '__main__':
-    bot.add_cog(commands_bot)
-    bot.add_cog(events_bot)
-    bot.add_cog(buttons_bot)
-    bot.run(TOKEN)
+bot.add_cog(Events(bot))
+bot.add_cog(bot_commands)
+bot.run(TOKEN)

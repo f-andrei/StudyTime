@@ -161,5 +161,3 @@ async def all_tasks(ctx):
 	except Exception as e:
 		print(f"Error in all_tasks(): {e}")
 		
-
-bot.run(TOKEN)

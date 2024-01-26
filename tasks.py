@@ -4,7 +4,6 @@ from typing import Optional
 
 class Task:
     def create_task(self, name: str, description: str, start_date: str, duration: float, is_repeatable: int) -> None:
-        # task = cls.__new__(cls)
         self.name = name
         self.description = description
         self.start_date = datetime.strptime(start_date, "%Y-%m-%dT%H:%M:%S")
@@ -17,13 +16,6 @@ class Task:
 
     def get_task(self, task_id) -> str:
         task_data = get_task_by_id(task_id)
-        # task_data = [{
-        #     "name": self.name,
-        #     "description": self.description,
-        #     "start_date": self.start_date.isoformat(),
-        #     "duration": self.duration,
-        #     "is_repeatable": self.is_repeatable
-        # }]
         return task_data
     
     def update_task(

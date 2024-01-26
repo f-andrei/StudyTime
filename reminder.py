@@ -1,8 +1,6 @@
 import asyncio
-from datetime import datetime, timedelta
+from datetime import datetime
 import schedule
-from queue import Queue
-from pytz import timezone
 from database.db_operations import get_due_tasks, get_due_tasks_days
 
 class TaskScheduler:
@@ -21,12 +19,12 @@ class TaskScheduler:
         self.due_task_ids_lock = asyncio.Lock()
         self.stop_scheduler = True
 
-    async def job(self, task_id, hour):
+    async def job(self, task_id):
         self.due_task_ids.add(task_id)
         return task_id
 
-    def schedule_job(self, task_id, day, hour):
-        asyncio.create_task(self.job(task_id, hour))
+    def schedule_job(self, task_id):
+        asyncio.create_task(self.job(task_id))
 
     async def update_schedule(self):
         while self.stop_scheduler:
@@ -45,7 +43,7 @@ class TaskScheduler:
 
             for task_id, data in tasks_dict.items():
                 for day, hour in zip(data['days'], data['hours']):
-                    self.schedule_job(task_id, day, hour)
+                    self.schedule_job(task_id)
 
             await asyncio.sleep(0.5)
             self.stop_scheduler = False

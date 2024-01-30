@@ -1,7 +1,6 @@
 import discord
-from discord.ext import commands, tasks
 from datetime import datetime, timedelta
-from config import DB_FILE, bot, TOKEN
+from config import bot, CHANNEL_ID
 from utils import new_task_filter
 from tasks import Task
 from buttons import DaysToRepeatView
@@ -12,8 +11,8 @@ from time import sleep
 async def greet(ctx):
 	try:
 		await ctx.send(f'Hey {ctx.author.mention}')
-	except:
-		...
+	except Exception as e:
+		print(f"Error at greet {e}")
 
 @bot.command()
 async def create_task(ctx):
@@ -58,8 +57,7 @@ async def create_task(ctx):
 @bot.command()
 async def update_task(ctx):
 	try:
-		channel_id = 1198117804130435092
-		channel = bot.get_channel(channel_id)
+		channel = bot.get_channel(CHANNEL_ID)
 		tasks = get_all_tasks()
 		if not tasks:
 			await channel.send("No tasks found.")
@@ -133,10 +131,9 @@ async def delete_task(ctx, *, task_id):
 
 
 @bot.command(name='tasks')
-async def all_tasks(ctx):
+async def all_tasks(ctx) -> None:
 	try:
-		channel_id = 1198117804130435092
-		channel = bot.get_channel(channel_id)
+		channel = bot.get_channel(CHANNEL_ID)
 		tasks = get_all_tasks()
 		if not tasks:
 			await channel.send("No tasks found.")

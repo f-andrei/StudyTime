@@ -1,7 +1,7 @@
 import sqlite3
 from pathlib import Path
-from datetime import datetime, timedelta
-from pytz import timezone
+from config import SAO_PAULO_NOW
+from datetime import timedelta
 
 ROOT_DIR = Path(__file__).parent.parent
 DB_DIR = 'database'
@@ -107,11 +107,8 @@ def delete_task_from_database(task_id):
 
 
 def get_due_tasks():
-    sao_paulo = timezone('America/Sao_Paulo')
-    current_time_utc = datetime.utcnow()
-    current_time_sao_paulo = current_time_utc.replace(tzinfo=timezone('UTC')).astimezone(sao_paulo)
-    end_time_range = current_time_sao_paulo - timedelta(minutes=10)
-    start_time_range = current_time_sao_paulo + timedelta(seconds=10)
+    end_time_range = SAO_PAULO_NOW - timedelta(minutes=10)
+    start_time_range = SAO_PAULO_NOW + timedelta(seconds=10)
     
     with establish_connection() as connection:
         try:

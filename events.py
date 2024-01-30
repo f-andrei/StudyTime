@@ -1,4 +1,4 @@
-from config import bot
+from config import bot, CHANNEL_ID
 import discord
 from discord.ext import tasks, commands
 from reminder import TaskScheduler
@@ -10,7 +10,6 @@ class Events(commands.Cog):
 	REMIND_LOOP_INTERVAL = 5
 	STATUS_LOOP_INTERVAL = 10
 	TASK_POSTPONE_INTERVAL = 295
-	CHANNEL_ID = 1198117804130435092
 
 	def __init__(self, bot: commands.Bot) -> None:
 		self.bot = bot
@@ -28,7 +27,7 @@ class Events(commands.Cog):
 
 	async def notify_tasks(self, tasks) -> None:
 		try:
-			channel = bot.get_channel(self.CHANNEL_ID)
+			channel = bot.get_channel(CHANNEL_ID)
 			if tasks:
 				for task_index, task_data in enumerate(tasks, start=1):
 					embed = discord.Embed(colour=discord.Color.green(), title=f"Active task {task_index + 1}:")
@@ -37,7 +36,7 @@ class Events(commands.Cog):
 					await asyncio.gather(
 						channel.send(embed=embed),
 						asyncio.sleep(self.TASK_POSTPONE_INTERVAL))
-			self.task_scheduler.on_off(stop='true')
+			self.task_scheduler.toggle_scheduler(True)
 		except IndexError as e:
 			print(f"Error in remind_tasks(): {e}")
 

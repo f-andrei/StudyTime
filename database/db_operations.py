@@ -1,7 +1,6 @@
 import sqlite3
 from pathlib import Path
-from config import SAO_PAULO_NOW
-from datetime import timedelta
+from utils import get_current_time
 
 ROOT_DIR = Path(__file__).parent.parent
 DB_DIR = 'database'
@@ -68,7 +67,6 @@ def get_last_task():
         except Exception as e:
             print(f"Error fetching task from database: {e}")
 
-
 def get_all_tasks():
     with establish_connection() as connection:
         try:
@@ -78,7 +76,6 @@ def get_all_tasks():
             return tasks
         except Exception as e:
             print(f"Error fetching tasks from database: {e}")
-
 
 def update_task_in_database(task_id, name, description, start_date, duration, is_repeatable):
     with establish_connection() as connection:
@@ -93,8 +90,6 @@ def update_task_in_database(task_id, name, description, start_date, duration, is
         except Exception as e:
             print(f"Error updating task in database: {e}")
 
-
-
 def delete_task_from_database(task_id):
     with establish_connection() as connection:
         try:
@@ -105,11 +100,8 @@ def delete_task_from_database(task_id):
         except Exception as e:
             print(f"Error deleting task from the database: {e}")
 
-
 def get_due_tasks():
-    end_time_range = SAO_PAULO_NOW - timedelta(minutes=10)
-    start_time_range = SAO_PAULO_NOW + timedelta(seconds=10)
-    
+    end_time_range, start_time_range = get_current_time()
     with establish_connection() as connection:
         try:
             cursor = connection.cursor()

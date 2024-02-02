@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from pytz import timezone
 import os
 
@@ -19,8 +19,3 @@ intents.message_content = True
 bot = commands.Bot(command_prefix='.', intents=intents)
 
 CHANNEL_ID = 1198117804130435092
-
-SAO_PAULO_TZ = timezone('America/Sao_Paulo')
-CURRENT_TIME_UTC = datetime.utcnow()
-SAO_PAULO_NOW = CURRENT_TIME_UTC.replace(tzinfo=timezone('UTC')).astimezone(SAO_PAULO_TZ)
-

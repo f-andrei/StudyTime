@@ -18,8 +18,8 @@ async def greet(ctx):
 async def create_task(ctx):
 	try:
 		current_time = datetime.now()
-		five_minutes_later = current_time + timedelta(minutes=5)
-		formatted_datetime = five_minutes_later.strftime("%Y-%m-%dT%H:%M:%S")
+		one_minutes_later = current_time + timedelta(minutes=1)
+		formatted_datetime = one_minutes_later.strftime("%Y-%m-%dT%H:%M:%S")
 		await ctx.send(embed=discord.Embed(
 			title="Create Task",
 			colour=discord.Color.yellow(),
@@ -57,6 +57,8 @@ async def create_task(ctx):
 @bot.command()
 async def update_task(ctx):
 	try:
+		current_time = datetime.now()
+		one_minute_later = current_time + timedelta(minutes=1)
 		channel = bot.get_channel(CHANNEL_ID)
 		tasks = get_all_tasks()
 		if not tasks:
@@ -87,7 +89,7 @@ async def update_task(ctx):
 				task_id = int(task_id)
 				break
 		await channel.send("Type in the updated task info:"
-				 f"```Study, Study Python, asdasdad, 30, 1```\n"
+				 f"```Study, Study Python, {one_minute_later}, 30, 1```\n"
 						"*Ensure that the string above is passed to the program as "
 						"a single, continuous sequence with each value separated by commas.*")
 
@@ -107,7 +109,7 @@ async def update_task(ctx):
 				task_id,
 				name=filtered_task[0],
 				description=filtered_task[1],
-				start_date=filtered_task[2],
+				start_date_str=filtered_task[2],
 				duration=filtered_task[3],
 				is_repeatable=filtered_task[4]
 			)

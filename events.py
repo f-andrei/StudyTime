@@ -29,6 +29,7 @@ class Events(commands.Cog):
 		try:
 			channel = bot.get_channel(CHANNEL_ID)
 			if tasks:
+				print('NOTIFY')
 				for task_index, task_data in enumerate(tasks, start=1):
 					embed = discord.Embed(colour=discord.Color.green(), title=f"Active task {task_index + 1}:")
 					for key, value in task_data.items():
@@ -43,6 +44,7 @@ class Events(commands.Cog):
 	@tasks.loop(seconds=REMIND_LOOP_INTERVAL)
 	async def remind_tasks(self) -> None:
 		print("Checking for tasks...")
+		self.task_scheduler.running = True
 		try:
 			await self.task_scheduler.update_schedule()
 			due_task_ids = await self.task_scheduler.get_due_task_ids()
@@ -50,7 +52,7 @@ class Events(commands.Cog):
 			if due_task_ids:
 				for task_id in due_task_ids:
 					try:
-						task_data = get_task_by_id(task_id)
+						task_data = await asyncio.to_thread(get_task_by_id, task_id)
 						task_data = task_data[0]
 						task_data = {
 								"Task nº": f"```{task_data[0]}```",
@@ -63,9 +65,13 @@ class Events(commands.Cog):
 						notify_tasks.append(task_data)
 					except IndexError:
 						due_task_ids.remove(task_id)
+						self.task_scheduler.due_task_ids.clear()
 						print(f"IndexError: Task with ID {task_id} not found.")
+						if not due_task_ids:
+							break
 			await self.notify_tasks(notify_tasks)
 		except IndexError as e:
+
 			print(f"Error in remind_tasks(): {e}")
 
 	@tasks.loop(seconds=STATUS_LOOP_INTERVAL)

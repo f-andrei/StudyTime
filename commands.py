@@ -5,6 +5,8 @@ from utils import new_task_filter
 from tasks import Task
 from buttons import DaysToRepeatView
 from database.db_operations import get_all_tasks
+from discord.ext import commands
+from discord import app_commands
 from time import sleep
 
 @bot.command(aliases=['bot', 'studybot', 'study'])
@@ -14,8 +16,10 @@ async def greet(ctx):
 	except Exception as e:
 		print(f"Error at greet {e}")
 
-@bot.command()
+@bot.hybrid_command(name="create_task", with_app_command=True, description="Create a new task")
+@app_commands.guilds(discord.Object(id=1095558713277956226))
 async def create_task(ctx):
+	await ctx.defer(ephemeral=True)
 	try:
 		current_time = datetime.now()
 		one_minutes_later = current_time + timedelta(minutes=1)
@@ -54,15 +58,18 @@ async def create_task(ctx):
 		print(f"Error in create_task(): {e}")
 
 
-@bot.command()
+@bot.hybrid_command(name="update_task", with_app_command=True, description="Update an existing task")
+@app_commands.guilds(discord.Object(id=1095558713277956226))
 async def update_task(ctx):
+	await ctx.defer(ephemeral=True)
 	try:
 		current_time = datetime.now()
 		one_minute_later = current_time + timedelta(minutes=1)
 		channel = bot.get_channel(CHANNEL_ID)
 		tasks = get_all_tasks()
 		if not tasks:
-			await channel.send("No tasks found.")
+			await ctx.reply("No tasks found.")
+			return
 		notify_tasks = []
 		await channel.send("These are your active tasks: ")
 
@@ -122,8 +129,10 @@ async def update_task(ctx):
 		print(f"Error in update_task(): {e}")
 
 
-@bot.command()
+@bot.hybrid_command(name="delete_task", with_app_command=True, description="Delete a task by its ID")
+@app_commands.guilds(discord.Object(id=1095558713277956226))
 async def delete_task(ctx, *, task_id):
+	await ctx.defer(ephemeral=True)
 	try:
 		task = Task()
 		task.delete_task(task_id)
@@ -131,14 +140,14 @@ async def delete_task(ctx, *, task_id):
 	except Exception as e:
 		print(f"Error in delete_task(): {e}")
 
-
-@bot.command(name='tasks')
-async def all_tasks(ctx) -> None:
+@bot.hybrid_command(name="tasks", with_app_command=True, description="List all active tasks")
+@app_commands.guilds(discord.Object(id=1095558713277956226))
+async def all_tasks(ctx: commands.Context) -> None:
+	await ctx.defer(ephemeral=True)
 	try:
-		channel = bot.get_channel(CHANNEL_ID)
 		tasks = get_all_tasks()
 		if not tasks:
-			await channel.send("No tasks found.")
+			await ctx.reply("No tasks found.")
 		notify_tasks = []
 		for task in tasks:
 			task_data = {
@@ -155,8 +164,13 @@ async def all_tasks(ctx) -> None:
 			embed = discord.Embed(colour=discord.Color.green(), title=f"Active task {i + 1}:")
 			for key, value in task_data.items():
 				embed.add_field(name=f"{key}", value=value, inline=False)
-			await channel.send(embed=embed)
+			await ctx.reply(embed=embed)
 			sleep(0.5)
 	except Exception as e:
 		print(f"Error in all_tasks(): {e}")
-		
+
+# sync new commands
+@bot.command()
+async def sync(ctx):
+	await bot.tree.sync(guild = discord.Object(id=1095558713277956226))
+	print("synced")

@@ -3,14 +3,14 @@ from database.db_operations import get_due_tasks, get_due_tasks_days
 from typing import List
 
 class TaskScheduler:
-    SLEEP_DURATION = 0.5
+    SLEEP_DURATION: float = 0.5
 
     def __init__(self) -> None:
-        self.due_task_ids = set()
-        self.due_task_ids_lock = asyncio.Lock()
-        self.running = True
+        self.due_task_ids = set[int] = set()
+        self.due_task_ids_lock: asyncio.Lock = asyncio.Lock()
+        self.running: bool = True
 
-    async def job(self, day, task_id):
+    async def job(self, day: int, task_id: int) -> None:
         async with self.due_task_ids_lock:
             self.due_task_ids.add(task_id)
 
@@ -36,13 +36,14 @@ class TaskScheduler:
 
             await asyncio.sleep(self.SLEEP_DURATION)
             self.running = False
+
     async def main(self) -> None:
         try:
             await self.update_schedule()
         except Exception as e:
             print(f"An error occurred in main: {e}")
 
-    async def get_due_task_ids(self) -> List:
+    async def get_due_task_ids(self) -> List[int]:
         async with self.due_task_ids_lock:
             return list(self.due_task_ids)
 

@@ -1,6 +1,6 @@
 import sqlite3
 from pathlib import Path
-from utils import get_current_time
+from dt_manager import DateTimeManager
 
 ROOT_DIR = Path(__file__).parent.parent
 DB_DIR = 'database'
@@ -9,6 +9,7 @@ DB_FILE = ROOT_DIR / DB_DIR / DB_NAME
 TASK_TABLE = 'tasks'
 REPEAT_DAYS_TABLE = 'repeat_days'
 
+dt_manager = DateTimeManager('America/Sao_Paulo')
 
 # Create a connection to the SQLite database
 def establish_connection():
@@ -67,6 +68,7 @@ def get_last_task():
         except Exception as e:
             print(f"Error fetching task from database: {e}")
 
+
 def get_all_tasks():
     with establish_connection() as connection:
         try:
@@ -76,6 +78,7 @@ def get_all_tasks():
             return tasks
         except Exception as e:
             print(f"Error fetching tasks from database: {e}")
+
 
 def update_task_in_database(task_id, name, description, start_date, duration, is_repeatable):
     with establish_connection() as connection:
@@ -90,6 +93,7 @@ def update_task_in_database(task_id, name, description, start_date, duration, is
         except Exception as e:
             print(f"Error updating task in database: {e}")
 
+
 def delete_task_from_database(task_id):
     with establish_connection() as connection:
         try:
@@ -97,11 +101,12 @@ def delete_task_from_database(task_id):
             cursor.execute(f'DELETE FROM {TASK_TABLE} WHERE id = ?', (task_id,))
             connection.commit()
             print(f"Task with ID {task_id} deleted successfully.")
-        except Exception as e:
+        except sqlite3.Error as e:
             print(f"Error deleting task from the database: {e}")
 
+
 def get_due_tasks():
-    end_time_range, start_time_range = get_current_time()
+    end_time_range, start_time_range = dt_manager.get_due_tasks_time_range()
     with establish_connection() as connection:
         try:
             cursor = connection.cursor()
@@ -119,6 +124,6 @@ def get_due_tasks_days(task_id):
             cursor = connection.cursor()
             cursor.execute(f'SELECT * FROM repeat_days WHERE task_id=?', (task_id,))
             task_days = cursor.fetchall()
-        except Exception as e:
+        except sqlite3.Error as e:
             print(e)
     return task_days

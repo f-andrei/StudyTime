@@ -1,6 +1,6 @@
-from database.db_operations import save_task_to_database, delete_task_from_database, update_task_in_database, get_task_by_id
+from database.db_operations import save_task_to_database, update_task_in_database
 from datetime import datetime
-from typing import Optional, Dict, Union
+from typing import Optional
 
 class Task:
     def create_task(
@@ -14,7 +14,7 @@ class Task:
         try:
             self.name = name
             self.description = description
-            self.start_date = datetime.strptime(start_date_str, "%Y-%m-%dT%H:%M:%S")
+            self.start_date = datetime.strptime(start_date_str, "%d/%m/%Y %H:%M:%S")
             self.duration = duration
             self.is_repeatable = is_repeatable
 
@@ -22,10 +22,6 @@ class Task:
 
         except Exception as e:
             print(f"Error creating task: {e}")
-
-    def retrieve_task(self, task_id: int) -> Dict[str, Union[str, float, int]]:
-        task_data = get_task_by_id(task_id)
-        return task_data
 
     def update_task(
         self,
@@ -44,7 +40,7 @@ class Task:
                 self.description = description
 
             if start_date_str is not None:
-                self.start_date = datetime.strptime(start_date_str, "%Y-%m-%dT%H:%M:%S")
+                self.start_date = datetime.strptime(start_date_str, "%d/%m/%Y %H:%M:%S")
 
             if duration is not None:
                 self.duration = duration
@@ -58,9 +54,3 @@ class Task:
         except Exception as e:
             print(f"Error updating task: {e}")
 
-    def delete_task(self, task_id: int) -> None:
-        try:
-            delete_task_from_database(task_id)
-
-        except Exception as e:
-            print(f"Error deleting task: {e}")

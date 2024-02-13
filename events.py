@@ -5,7 +5,7 @@ from reminder import TaskScheduler
 from database.db_operations import get_task_by_id
 import asyncio
 from typing import List
-from utils import create_embed, format_embed
+from embed_utils import create_embed, format_embed
 
 
 class Events(commands.Cog):
@@ -55,7 +55,6 @@ class Events(commands.Cog):
 	@tasks.loop(seconds=REMIND_LOOP_INTERVAL)
 	async def remind_tasks(self) -> None:
 		"""Checks for new tasks every {REMIND_LOOP_INTERVAL}"""
-		print("Checking for tasks...")
 		self.task_scheduler.running = True
 		try:
 			await self.task_scheduler.update_schedule()

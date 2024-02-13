@@ -6,7 +6,7 @@ class TaskScheduler:
     SLEEP_DURATION: float = 0.5
 
     def __init__(self) -> None:
-        self.due_task_ids = set[int] = set()
+        self.due_task_ids: set[int] = set()
         self.due_task_ids_lock: asyncio.Lock = asyncio.Lock()
         self.running: bool = True
 
@@ -20,7 +20,6 @@ class TaskScheduler:
 
     async def update_schedule(self) -> None:
         while self.running:
-            print('running reminder')
             self.due_task_ids.clear()
             due_tasks = get_due_tasks()
             tasks_dict = {}

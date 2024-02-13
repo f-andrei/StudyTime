@@ -1,8 +1,9 @@
 import discord
 from datetime import datetime, timedelta
 from config import bot, CHANNEL_ID, DISCORD_ID
-from utils import new_task_filter, format_embed, create_embed
+from utils import new_task_filter, save_session
 from database.db_operations import delete_task_from_database, get_task_by_id
+from embed_utils import format_embed, create_embed
 from tasks import Task
 from buttons import DaysToRepeatView
 from database.db_operations import get_all_tasks
@@ -10,6 +11,9 @@ from discord.ext import commands
 from discord import app_commands
 from time import sleep
 from dt_manager import DateTimeManager
+from chatbot import chat
+import notes
+from notes import get_all_notes_embed
 
 TIMEZONE = 'America/Sao_Paulo'
 dt_manager = DateTimeManager(TIMEZONE)
@@ -41,7 +45,7 @@ async def create_task(ctx):
 				new_task = msg.content
 				new_task = str(new_task)
 				break
-
+		print(new_task)
 		task = Task()
 		filtered_task = new_task_filter(new_task)
 		task.create_task(*filtered_task)
@@ -100,7 +104,7 @@ async def update_task(ctx):
 				task_id = int(task_id)
 				break
 		await channel.send("Type in the updated task info:"
-				 f"```Study, Study Python, {one_minute_later}, 30, 1```\n"
+				 f"```Study, Study Python, {dt_manager.format_datetime(one_minute_later)}, 5, 1```\n"
 						"*Ensure that the string above is passed to the program as "
 						"a single, continuous sequence with each value separated by commas.*")
 		# Waits for the user's next message containing the new task data as a single string
@@ -177,6 +181,96 @@ async def all_tasks(ctx: commands.Context) -> None:
 	except Exception as e:
 		print(f"Error in all_tasks(): {e}")
 
+
+@bot.hybrid_command(name="chat", description="Chat with ChatGPT")
+@app_commands.guilds(DISCORD_ID)
+async def chatgpt(ctx):
+	"""Calls OpenAI's GPT API"""
+	try:
+		await ctx.send('Conversation with GPT started. To leave the conversation type "leave"')
+		while True:
+			while True:
+				msg = await bot.wait_for("message")
+				if (msg.author == ctx.author):
+					user_message = msg.content
+					user_message = str(user_message)
+					break
+			
+			if not user_message.lower() == 'leave':
+				gpt_response = await chat(user_message)
+
+				await ctx.send(gpt_response)
+				msg = ''
+			else:
+				await ctx.send("You left the chat.")
+				save_session()
+				return
+	except Exception as e:
+		print("Error: {e}")
+
+
+@bot.hybrid_command(name="create_note", description="Create a note")
+@app_commands.guilds(DISCORD_ID)
+async def create_note(ctx):
+	"""Create a note"""
+	try: 
+		await ctx.send("Create a note by typing its title and content separated by a comma.")
+		await ctx.send("Example: Study, Study python")
+
+		while True:
+			msg = await bot.wait_for("message")
+			if (msg.author == ctx.author):
+				user_message = msg.content
+				user_message = str(user_message)
+				break
+
+		note = notes.create_note(user_message)
+		embed = discord.Embed(colour=discord.Color.magenta(), title="Note")
+		embed.add_field(name=f"Title", value=f"```{note[0]}```", inline=False)
+		embed.add_field(name=f"Description", value=f"```{note[1]}```", inline=False)
+		embed.add_field(name=f"Created at", value=f"```{note[2]}```", inline=False)
+		await ctx.send(embed=embed)
+		return
+	except Exception as e:
+		raise e
+
+
+@bot.hybrid_command(name="notes", description="List all notes")
+@app_commands.guilds(DISCORD_ID)
+async def all_notes(ctx):
+	try:
+		all_notes = notes.get_notes()
+		if all_notes:
+			await ctx.send("Here are all your notes")
+			all_notes_embeds = get_all_notes_embed()
+			for note_embed in all_notes_embeds:
+				await ctx.send(embed=note_embed)
+				sleep(0.3)
+	except Exception as e:
+		print(e)
+
+
+@bot.hybrid_command(name="update_note", description="Update a note by its name")
+@app_commands.guilds(DISCORD_ID)
+async def update_note(ctx):
+	try:
+		all_notes_embeds = get_all_notes_embed()
+		for note_embed in all_notes_embeds:
+			await ctx.send(embed=note_embed)
+			sleep(0.3)
+
+		while True:
+			msg = await bot.wait_for("message")
+			if (msg.author == ctx.author):
+				user_message = msg.content
+				user_message = str(user_message)
+				break
+
+		# will be implemented
+	except Exception as e:
+		...
+
+		
 # sync new commands
 @bot.command()
 async def sync(ctx):

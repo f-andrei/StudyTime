@@ -1,58 +1,55 @@
 from dt_manager import DateTimeManager
-import discord
+from database.notes_operations import save_note_to_database, update_note_in_database
 import json
-from time import sleep
+from typing import Optional
 
 dt_manager = DateTimeManager('America/Sao_Paulo')
 notes_path = 'database/notes.json'
 
-def create_note(note_data):
-    """Creates a note"""
-    note = note_data.split(', ')
-    note.append(dt_manager.format_datetime(dt_manager.get_current_time()))
-    note_dict = {}
-    note_dict["title"] = note[0]
-    note_dict["description"] = note[1]
-    note_dict["created_at"] = note[2]
-    try:
-        with open(notes_path, 'r') as file:
-            try:
-                notes = json.load(file)
-                if not isinstance(notes, list):
-                    raise ValueError("Invalid data type in JSON file")
-            except (json.JSONDecodeError, ValueError):
-                notes = []  
-    except FileNotFoundError:
-        notes = []
 
-    notes.append(note_dict)
+class Note:
+    def create_note(
+            self,
+            name: str, 
+            description: str, 
+            links: Optional[str],
+            user_id: int,  
+    ) -> None:
+        try:
+            self.user_id = user_id
+            self.name = name
+            self.description = description
+            self.links = links
+            self.status = 'Active'
+            self.created_at = dt_manager.get_formatted_datetime_now()
+            save_note_to_database(self)
+        except Exception as e:
+            print(f"Error creating task: {e}")
 
-    with open(notes_path, 'w') as file:
-        json.dump(notes, file, indent=4, separators=(',', ':'), ensure_ascii=True)
-    
-    return note
+    def update_note(
+            self,
+            note_id: int,
+            name: Optional[str] = None,
+            description: Optional[str] = None,
+            links: Optional[str] = None,
+        ) -> None:
 
+        try:
+            if name is not None:
+                self.name = name.strip().capitalize()
 
-def get_notes():
-    try:
-        with open(notes_path, 'r') as file:
-            notes = json.load(file)
-            return notes
-    except (json.JSONDecodeError, ValueError) as e:
-        print(f"Error: {e}")
+            if description is not None:
+                self.description = description
 
+            if links is not None:
+                self.links = links
 
-def get_all_notes_embed():
-    try:
-        all_notes = get_notes()
-        if all_notes:
-            embeds = []
-            for note in all_notes:
-                embed = discord.Embed(colour=discord.Color.magenta(), title="Note")
-                embed.add_field(name=f"Title", value=f"```{note['title']}```", inline=False)
-                embed.add_field(name=f"Description", value=f"```{note['description']}```", inline=False)
-                embed.add_field(name=f"Created at", value=f"```{note['created_at']}```", inline=False)
-                embeds.append(embed)
-            return embeds      
-    except Exception as e:
-         ...
+            update_note_in_database(
+                note_id, 
+                self.name, 
+                self.description, 
+                self.links)
+            
+        except Exception as e:
+            print(f"Error updating note: {e}")  
+

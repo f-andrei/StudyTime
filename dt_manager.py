@@ -9,21 +9,16 @@ class DateTimeManager:
         self.datetime_format = "%d/%m/%Y %H:%M:%S"
  
     def get_current_time(self) -> datetime:
-        utc_now = datetime.utcnow()
+        datetime_now = datetime.utcnow()
         if self.tz:
             new_tz = timezone(self.tz)
-            utc_now = utc_now.replace(tzinfo=timezone('UTC')).astimezone(new_tz)
-        return utc_now
+            datetime_now = datetime_now.replace(tzinfo=timezone('UTC')).astimezone(new_tz)
+        return datetime_now
 
     def get_formatted_datetime_now(self) -> str:
-        utc_now = self.get_current_time()
-        if self.tz:
-            new_tz = timezone(self.tz)
-            formatted_tz_now = utc_now.replace(tzinfo=timezone('UTC')).astimezone(new_tz)
-            formatted_tz_now = formatted_tz_now.strftime(self.datetime_format)
-            return formatted_tz_now
-        formatted_utc_now = utc_now.strftime(self.datetime_format)
-        return formatted_utc_now
+        datetime_now = self.get_current_time()
+        formatted_datetime_now = datetime_now.strftime(self.datetime_format)
+        return formatted_datetime_now
 
     def format_datetime(self, dt: datetime) -> str:
         formatted_datetime = dt.strftime(self.datetime_format)

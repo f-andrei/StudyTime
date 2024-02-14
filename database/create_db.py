@@ -8,7 +8,8 @@ DB_FILE = ROOT_DIR / DB_DIR / DB_NAME
 
 TASKS = 'tasks'
 REPEAT_DAYS = 'repeat_days'
-
+NOTES = 'notes'
+USER = 'user'
 
 def initialize_database():
     try:
@@ -16,33 +17,54 @@ def initialize_database():
             cur = conn.cursor()
 
             # Clear existing data from tables
-            clear_tables(cur, TASKS)
-            clear_tables(cur, REPEAT_DAYS)
+            # clear_tables(cur, TASKS)
+            # clear_tables(cur, REPEAT_DAYS)
+            # clear_tables(cur, 'sqlite_sequence')
 
             # Clear all ids
-            cur.execute('VACUUM')
-            conn.commit()
+            # cur.execute('VACUUM')
+            # conn.commit()
+
+            create_table(cur, USER, [
+                ('id', 'INTEGER PRIMARY KEY'),
+                ('username', 'TEXT'),
+                ('discriminator', 'INTEGER'),
+                ('guilds', 'TEXT'),
+                
+            ])
 
             # Create parent table
             create_table(cur, TASKS, [
                 ('id', 'INTEGER PRIMARY KEY AUTOINCREMENT'),
                 ('name', 'TEXT'),
                 ('description', 'TEXT'),
+                ('links', 'TEXT'),
                 ('start_date', 'TEXT'),
                 ('duration', 'FLOAT'),
-                ('is_repeatable', 'INTEGER')
+                ('is_repeatable', 'INTEGER'),
+                ('user_id', 'INTEGER'),
+                (f'FOREIGN KEY (user_id) REFERENCES {USER} (id)', '')
             ])
 
             # Create child table
             create_table(cur, REPEAT_DAYS, [
                 ('task_id', 'INTEGER'),
                 ('day_number', 'INTEGER'),
-                ('PRIMARY KEY', '(task_id)'),
-                (f'FOREIGN KEY (task_id) REFERENCES {TASKS} (id)', '')
+                (f'FOREIGN KEY (task_id) REFERENCES {TASKS} (id)', ''),
             ])
 
+
+            create_table(cur, NOTES, [
+                ('id', 'INTEGER PRIMARY KEY AUTOINCREMENT'),
+                ('name', 'TEXT'),
+                ('description', 'TEXT'),
+                ('links', 'TEXT'),
+                ('status', 'TEXT'),
+                ('created_at', 'DATETIME'),
+                ('user_id', 'INTEGER'),
+            ])
     except Exception as e:
-        print(f"Error: {e}")
+        raise e
 
 
 def clear_tables(cursor, table_name):

@@ -4,4 +4,7 @@
 context.json
 notes.json
 database/history.json
-studytime.sqlite3
+database/studytime.sqlite3
+
+database/__pycache__/notes_operations.cpython-311.pyc
+database/__pycache__/__init__.cpython-311.pyc

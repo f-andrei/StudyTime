@@ -1,7 +1,6 @@
 from datetime import datetime
 from dt_manager import DateTimeManager
-import discord
-from typing import List, Dict
+from typing import List
 import json
 
 
@@ -11,18 +10,28 @@ dt_now = datetime.now()
 def new_task_filter(new_task: str) -> List[str]:
     """Splits a single string (new_task) into task parameters"""
     filtered_task = new_task.split(", ")
-    try:
-        filtered_task[3] = float(filtered_task[3]) 
-        filtered_task[4] = int(filtered_task[4])
-        return filtered_task
-    except ValueError as e:
-        invalid_value = filtered_task[3] if 'could not convert string to float' in str(e) else filtered_task[4]
-        return f'Invalid data type. {invalid_value} must be int or float'
-    
+    if len(filtered_task) == 5:
+        try:
+            filtered_task[3] = float(filtered_task[3]) 
+            filtered_task[4] = int(filtered_task[4])
+            return filtered_task
+        except ValueError as e:
+            invalid_value = filtered_task[3] if 'could not convert string to float' in str(e) else filtered_task[4]
+            return f'Invalid data type. {invalid_value} must be int or float'
+    else:
+        try:
+            filtered_task[4] = float(filtered_task[4]) 
+            filtered_task[5] = int(filtered_task[5])
+            return filtered_task
+        except ValueError as e:
+            invalid_value = filtered_task[3] if 'could not convert string to float' in str(e) else filtered_task[4]
+            return f'Invalid data type. {invalid_value} must be int or float'
 
 
-
-
+def new_note_filter(new_note: str) -> List[str]:
+    """Splits a single string (new_note) into note parameters"""
+    filtered_note = new_note.split(", ")
+    return filtered_note
 
 def save_session():
     context_path = 'database/context.json'
@@ -49,5 +58,3 @@ def save_session():
         json.dump(history, history_file, indent=2, separators=(',', ':'), ensure_ascii=True)
 
 
-if __name__ == '__main__':
-    ...

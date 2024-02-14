@@ -2,7 +2,7 @@ from config import bot, CHANNEL_ID
 import discord
 from discord.ext import tasks, commands
 from reminder import TaskScheduler
-from database.db_operations import get_task_by_id
+from database.task_operations import get_task_by_id
 import asyncio
 from typing import List
 from embed_utils import create_embed, format_embed
@@ -69,7 +69,7 @@ class Events(commands.Cog):
 						formatted_task_data = format_embed(task_data=task_data)
 
 						notify_tasks.append(formatted_task_data)
-						durations.append(task_data[4])
+						durations.append(task_data[5])
 					except IndexError:
 						# Since this program is supposed to run continuously, the user may
 						# decide to delete a task, in this case to avoid crashes, said

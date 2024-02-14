@@ -1,5 +1,7 @@
 /.env
 /.venv
-/app.py
-/settings.py
 /__pycache__
+context.json
+notes.json
+database/history.json
+studytime.sqlite3

@@ -22,8 +22,8 @@ def save_task_to_database(task):
     with establish_connection() as connection:
         try:
             cursor = connection.cursor()
-            cursor.execute(f"INSERT INTO {TASK_TABLE} (name, description, start_date, duration, is_repeatable) VALUES (?, ?, ?, ?, ?)",
-                        (task.name, task.description, task.start_date, task.duration, task.is_repeatable))
+            cursor.execute(f"INSERT INTO {TASK_TABLE} (name, description, links, start_date, duration, is_repeatable, user_id) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                        (task.name, task.description, task.links, task.start_date, task.duration, task.is_repeatable, task.user_id))
             connection.commit()
             task.task_id = cursor.lastrowid
             print(f"Task '{task.name}' successfully inserted into the database.")
@@ -69,25 +69,26 @@ def get_last_task():
             print(f"Error fetching task from database: {e}")
 
 
-def get_all_tasks():
+def get_tasks_by_user_id(user_id):
     with establish_connection() as connection:
         try:
             cursor = connection.cursor()
-            cursor.execute(f'SELECT * FROM {TASK_TABLE} ORDER BY id DESC')
-            tasks = cursor.fetchall()
-            return tasks
+            cursor.execute(f"SELECT * FROM {TASK_TABLE} WHERE user_id=?", (user_id,))
+            tasks_data = cursor.fetchall()
+            return tasks_data
         except Exception as e:
             print(f"Error fetching tasks from database: {e}")
+            
 
 
-def update_task_in_database(task_id, name, description, start_date, duration, is_repeatable):
+def update_task_in_database(task_id, name, description, links, start_date, duration, is_repeatable):
     with establish_connection() as connection:
         try:
             cursor = connection.cursor()
             cursor.execute(
-                f'UPDATE {TASK_TABLE} SET name=?, description=?, start_date=?, duration=?, '
+                f'UPDATE {TASK_TABLE} SET name=?, description=?, links=?, start_date=?, duration=?, '
                 'is_repeatable=? WHERE id=?',
-                (name, description, start_date, duration, is_repeatable, task_id)
+                (name, description, links, start_date, duration, is_repeatable, task_id)
             )
             connection.commit()
         except Exception as e:

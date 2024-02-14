@@ -1,5 +1,5 @@
 import discord
-from database.db_operations import save_repeat_days_to_database
+from database.task_operations import save_repeat_days_to_database
 from config import bot, CHANNEL_ID
 
 

@@ -1,30 +1,75 @@
 # StudyTime Discord Bot
 
-O **StudyTime Discord Bot** é uma aplicação que está sendo desenvolvida para o Discord com o objetivo de facilitar a gestão de tarefas e fornecer alertas para auxiliar na rotina de estudos.
+The StudyTime Discord Bot is an application developed for Discord with the aim of facilitating task management and providing alerts to assist in study routines.
 
-## Funcionalidades
+## Features
 
-### 1. Gestão de Tarefas
-- **Criar Tarefas:** Os usuários podem criar tarefas especificando o nome, descrição, data de início, duração e se a tarefa é repetível.
-- **Editar Tarefas:** É possível editar tarefas existentes para atualizar informações como nome, descrição, data de início, duração e repetibilidade.
-- **Listar Tarefas:** Os usuários podem listar todas as tarefas existentes.
-- **Deletar Tarefas:** Permite excluir tarefas que não são mais necessárias.
+1. **Task Management**
+   - **/create_task:** Creates a new task.
+   - **/update_task:** Updates an existing task.
+   - **/tasks:** Lists all available tasks.
+   - **/delete_task [Task ID]:** Deletes an existing task.
 
-### 2. Alertas
-- **Enviar Alertas:** O bot envia alertas nos horários agendados para as tarefas, auxiliando os usuários a lembrarem-se de suas atividades de estudo.
+2. **Note Management**
+   - **/create_note:** Creates a new note.
+   - **/update_note:** Updates an existing note.
+   - **/notes:** Lists all available notes.
+   - **/delete_note [Note ID]:** Deletes an existing note.
 
-## Próximas Implementações
-- **Repetições de Tarefas:** Adicionar a funcionalidade de criar tarefas repetíveis, para facilitar a gestão de tarefas recorrentes.
-- **Sincronização com o Google Calendar:** Integrar o bot com o Google Calendar para proporcionar uma visão mais abrangente das atividades de estudo.
+3. **Chat with ChatGPT**
+   - **/chat:** Initiates a conversation with ChatGPT to get answers to your questions or start a conversation.
 
-## Como Utilizar
+4. **Alerts**
+   - Alerts are automatically sent at scheduled times for each task.
 
-1. **Comandos:**
-   - `.create_task`: Cria uma nova tarefa.
-   - `.update_task`: Atualiza uma tarefa existente.
-   - `.tasks`: Lista todas as tarefas disponíveis.
-   - `.delete_task [ID da tarefa]`: Deleta uma tarefa existente.
 
-2. **Alertas:**
-   - Os alertas são automaticamente enviados nos horários agendados para cada tarefa.
+## Installation Guide
+
+1. **Clone the Repository:**
+   ```bash
+   git clone https://github.com/f-andrei/StudyTime.git
+
+2. **Install Requirements:** Navigate to the project directory and install the required Python packages using pip:
+   
+    ```bash
+    cd StudyTime
+    pip install -r requirements.txt
+    ```
+
+3. **Set Up OpenAI API Key:**
+   - Visit [OpenAI's Quickstart Guide](https://platform.openai.com/docs/quickstart/step-2-setup-your-api-key) to obtain your API key.
+   - Set up your API key as an environment variable. You can do this by adding the following line to your `.env` file in the project directory:
+     
+     ```plaintext
+     OPENAI_API_KEY=your_api_key_here
+     ```
+
+4. **Set Up Environment Variables:**
+   - Create a `.env` file in the project directory if it doesn't already exist.
+   - Define the necessary environment variables in the `.env` file. For example:
+     
+     ```plaintext
+     DISCORD_TOKEN=your_discord_bot_token_here
+     CHANNEL_ID=your_discord_channel_id_here
+     DISCORD_ID=your_discord_user_id_here
+     ```
+   - Refer to the [Discord Developer Portal](https://discord.com/developers/docs/getting-started#configuring-your-bot) to learn how to obtain your Discord bot token.
+   - Learn how to find your Discord server's ID and channel ID in [this article](https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID).
+
+5. **Run the Bot:** Start the bot by running the main Python script:
+   
+    ```bash
+    python main.py
+    ```
+
+6. **Invite the Bot to Your Discord Server:**
+   - Visit the Discord Developer Portal and create a new application.
+   - Add a bot to your application and copy the bot token.
+   - Use the bot token to invite the bot to your Discord server using the following link (replace `<YOUR_BOT_CLIENT_ID>` with your bot's client ID):
+     
+     ```plaintext
+     https://discord.com/oauth2/authorize?client_id=<YOUR_BOT_CLIENT_ID>&scope=bot
+     ```
+
+7. **Enjoy Using the StudyTime Discord Bot!** You can now use the bot's commands and features on your Discord server.
 

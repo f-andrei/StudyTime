@@ -1,5 +1,5 @@
 from datetime import datetime
-from dt_manager import DateTimeManager
+from utils.dt_manager import DateTimeManager
 from typing import List
 import json
 
@@ -34,8 +34,8 @@ def new_note_filter(new_note: str) -> List[str]:
     return filtered_note
 
 def save_session():
-    context_path = 'database/context.json'
-    history_path = 'database/history.json'
+    context_path = 'app\database\context.json'
+    history_path = 'app\database\history.json'
     try:
         with open(context_path, 'r') as context_file:
             context = json.load(context_file)

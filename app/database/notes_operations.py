@@ -1,6 +1,6 @@
 import sqlite3
 from pathlib import Path
-from dt_manager import DateTimeManager
+from utils.dt_manager import DateTimeManager
 
 ROOT_DIR = Path(__file__).parent.parent
 DB_DIR = 'database'

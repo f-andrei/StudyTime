@@ -1,5 +1,5 @@
 from datetime import datetime
-from dt_manager import DateTimeManager
+from utils.dt_manager import DateTimeManager
 import discord
 from typing import List, Dict
 

@@ -13,13 +13,13 @@ client = OpenAI(api_key=f"{TOKEN}")
 
 def save_context_to_json(context):
     context = context[-MAX_HISTORY_LENGTH:]
-    with open('context.json', 'w') as file:
+    with open('app\database\context.json', 'w') as file:
         json.dump(context, file, indent=2, separators=(',', ':'), ensure_ascii=True)
 
 
 def load_json_context():
     try:
-        with open('context.json', 'r') as file:
+        with open('app\database\context.json', 'r') as file:
             content = json.load(file)
             return content
     except (FileNotFoundError, json.decoder.JSONDecodeError) as e:

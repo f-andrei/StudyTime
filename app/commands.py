@@ -1,18 +1,18 @@
 import discord
 from datetime import datetime, timedelta
 from config import bot, CHANNEL_ID, DISCORD_ID
-from utils import new_task_filter, save_session, new_note_filter
+from utils.utils import new_task_filter, save_session, new_note_filter
 from database.task_operations import delete_task_from_database, get_task_by_id
-from embed_utils import format_embed, create_embed, get_all_notes_embed, creation_success_embed
-from tasks import Task
+from utils.embed_utils import format_embed, create_embed, get_all_notes_embed, creation_success_embed
+from tasks.tasks import Task
 from buttons import DaysToRepeatView
 from database.task_operations import get_tasks_by_user_id
 from discord.ext import commands
 from discord import app_commands
 from time import sleep
-from dt_manager import DateTimeManager
-from chatbot import chat
-from notes import Note
+from utils.dt_manager import DateTimeManager
+from chatbot.chatbot import chat
+from notes.notes import Note
 from database.notes_operations import get_notes_by_user_id, get_note_by_id, delete_note_from_database
 
 
@@ -216,7 +216,7 @@ async def chatgpt(ctx):
 				save_session()
 				return
 	except Exception as e:
-		print("Error: {e}")
+		print(f"Error at chatgpt(): {e}")
 
 
 @bot.hybrid_command(name="create_note", description="Create a note")

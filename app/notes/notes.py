@@ -1,4 +1,4 @@
-from dt_manager import DateTimeManager
+from utils.dt_manager import DateTimeManager
 from database.notes_operations import save_note_to_database, update_note_in_database
 import json
 from typing import Optional

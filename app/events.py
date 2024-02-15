@@ -1,11 +1,11 @@
 from config import bot, CHANNEL_ID
 import discord
 from discord.ext import tasks, commands
-from reminder import TaskScheduler
+from tasks.reminder import TaskScheduler
 from database.task_operations import get_task_by_id
 import asyncio
 from typing import List
-from embed_utils import create_embed, format_embed
+from utils.embed_utils import create_embed, format_embed
 
 
 class Events(commands.Cog):

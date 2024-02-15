@@ -1,10 +1,13 @@
 /.env
 /.venv
-/__pycache__
+__pycache__
+app/__pycache__
+app/database/__pycache__
+app/chatbot/__pycache__
+app/utils/__pycache__
+app\utils\__pycache__\__init__.cpython-311.pyc
 context.json
 notes.json
-database/history.json
-database/studytime.sqlite3
+app/database/history.json
+app/database/studytime.sqlite3
 
-database/__pycache__/notes_operations.cpython-311.pyc
-database/__pycache__/__init__.cpython-311.pyc

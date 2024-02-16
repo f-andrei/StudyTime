@@ -1,4 +1,4 @@
-from config import TOKEN, bot
+from config import DISCORD_TOKEN, bot
 from commands import bot as bot_commands
 from events import Events
 
@@ -11,4 +11,7 @@ async def on_ready():
 
 bot.add_cog(Events(bot))
 bot.add_cog(bot_commands)
-bot.run(TOKEN)
+
+
+if __name__ == "__main__":
+    bot.run(DISCORD_TOKEN)

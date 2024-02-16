@@ -16,12 +16,12 @@ def initialize_database():
         with sqlite3.connect(DB_FILE) as conn:
             cur = conn.cursor()
 
-            # Clear existing data from tables
+            #Clear existing data from tables
             # clear_tables(cur, TASKS)
             # clear_tables(cur, REPEAT_DAYS)
             # clear_tables(cur, 'sqlite_sequence')
 
-            # Clear all ids
+            # #Clear all ids
             # cur.execute('VACUUM')
             # conn.commit()
 
@@ -39,7 +39,7 @@ def initialize_database():
                 ('name', 'TEXT'),
                 ('description', 'TEXT'),
                 ('links', 'TEXT'),
-                ('start_date', 'TEXT'),
+                ('start_date', 'DATETIME'),
                 ('duration', 'FLOAT'),
                 ('is_repeatable', 'INTEGER'),
                 ('user_id', 'INTEGER'),

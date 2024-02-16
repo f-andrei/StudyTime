@@ -1,7 +1,7 @@
 import discord
 from datetime import datetime, timedelta
 from config import bot, CHANNEL_ID, DISCORD_ID
-from utils.utils import new_task_filter, save_session, new_note_filter
+from utils.utils import new_task_filter, new_note_filter
 from database.task_operations import delete_task_from_database, get_task_by_id
 from utils.embed_utils import format_embed, create_embed, get_all_notes_embed, creation_success_embed
 from tasks.tasks import Task
@@ -11,7 +11,7 @@ from discord.ext import commands
 from discord import app_commands
 from time import sleep
 from utils.dt_manager import DateTimeManager
-from chatbot.chatbot import chat
+from chatbot.chat_llm import invoke_chat
 from notes.notes import Note
 from database.notes_operations import get_notes_by_user_id, get_note_by_id, delete_note_from_database
 
@@ -25,6 +25,7 @@ async def greet(ctx):
 		await ctx.send(f'Hey {ctx.author.mention}')
 	except Exception as e:
 		print(f"Error at greet {e}")
+
 
 @bot.hybrid_command(name="create_task", description="Create a new task")
 @app_commands.guilds(DISCORD_ID)
@@ -197,6 +198,7 @@ async def all_tasks(ctx: commands.Context) -> None:
 async def chatgpt(ctx):
 	"""Calls OpenAI's GPT API"""
 	try:
+		channel = bot.get_channel(CHANNEL_ID)
 		await ctx.send('Conversation with GPT started. To leave the conversation type "leave"')
 		while True:
 			while True:
@@ -207,16 +209,17 @@ async def chatgpt(ctx):
 					break
 			
 			if not user_message.lower() == 'leave':
-				gpt_response = await chat(user_message)
-
-				await ctx.send(gpt_response)
-				msg = ''
+				gpt_response = await invoke_chat(user_message)
+				try:
+					await channel.send(gpt_response)
+				except Exception as e:
+					print(e)
+					await ctx.send("Could not find an answer.")
 			else:
 				await ctx.send("You left the chat.")
-				save_session()
 				return
 	except Exception as e:
-		print(f"Error at chatgpt(): {e}")
+		raise e
 
 
 @bot.hybrid_command(name="create_note", description="Create a note")

@@ -52,7 +52,7 @@ async def create_task(ctx):
 		task = Task()
 		filtered_task = new_task_filter(new_task)
 		task.create_task(*filtered_task, user_id)
-		task_created_embed = creation_success_embed(filtered_task, title="Note created sucessfully!")
+		task_created_embed = creation_success_embed(filtered_task, title="Task created sucessfully!")
 		await ctx.send(embed=task_created_embed)
 		# If true, will be shown days of the week as buttons to select repeat days
 		is_repeatable = filtered_task[5]
@@ -60,7 +60,7 @@ async def create_task(ctx):
 			view=DaysToRepeatView()
 			await ctx.send("Select which days to repeat", view=view)
 		else:
-			task_created_embed = creation_success_embed(filtered_task, title="Note created sucessfully!")
+			task_created_embed = creation_success_embed(filtered_task, title="Task created sucessfully!")
 			await ctx.send(embed=task_created_embed)
 		return
 	except Exception as e:
@@ -209,12 +209,18 @@ async def chatgpt(ctx):
 					break
 			
 			if not user_message.lower() == 'leave':
-				gpt_response = await invoke_chat(user_message)
 				try:
-					await channel.send(gpt_response)
+					user_id = msg.author.id
+					error_response = 'Agent stopped due to iteration limit or time limit.'
+					gpt_response = await invoke_chat(user_message, user_id)
+					if gpt_response ==  error_response:
+						gpt_response = "Sorry, I could not find an answer."
+						await channel.send(gpt_response)
+					else:
+						await channel.send(gpt_response)
 				except Exception as e:
-					print(e)
-					await ctx.send("Could not find an answer.")
+					print(f"Error chat(): {e}")
+					
 			else:
 				await ctx.send("You left the chat.")
 				return

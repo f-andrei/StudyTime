@@ -23,9 +23,8 @@ class QueryDataInput(BaseModel):
 class QueryData(BaseTool):
     name: str = "query_data"    
     args_schema: Type[BaseModel] = QueryDataInput
-    description: str =  f"""This function is useful to query data from the 
-                        database. Generate a SQLITE3 query to answer the 
-                        user's question. Elaborate on the information retrieved."""          
+    description: str =  f"""A SQLite query executor. Useful for when you need to answer
+    about user's tasks and notes. Input should be a SQLite3 command."""          
 
     def _run(self, query) -> tuple:
         try:
@@ -46,9 +45,10 @@ class QueryData(BaseTool):
 
 class DatabaseInfo(BaseTool):
     name: str = "database_info"
-    description: str = f"""This function is useful to retrieve the database 
-                        structre of an SQLITE3, such as table names 
-                        and columns."""
+    description: str = f"""Retrieves information about a database. Useful
+    when you need to answer about user's tasks or notes. No input needed.
+    Contains all the relevant structure about a data base (tables, columns,
+    additional information)."""
     
     def _run(self, _=None) -> str:
         try:
@@ -91,17 +91,17 @@ tools = [
     Tool(
         name="DatabaseInfo",
         func=db_info.run,
-        description="Useful to learn the structure of an sqlite database, such as table names and columns. Takes no arguments."
+        description="Useful to understand the structure of an sqlite database, such as table names and columns. Takes no arguments."
     ),
     Tool(
         name="QueryData",
         func=db_query.run,
         description="Useful to query data from a structural database. Takes only the SQL query. Adjust the user input so that it matches the database dtypes."
     ),
-    Tool(
-        name="respond",
-        func=respond.run,
-        description="Useful to respond the user when the message is not related to databases."
-    )
+    # Tool(
+    #     name="respond",
+    #     func=respond.run,
+    #     description="Useful to respond the user when the message is not related to databases."
+    # )
 ]
 

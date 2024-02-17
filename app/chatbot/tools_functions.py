@@ -32,6 +32,8 @@ def analyze_table(table_name):
         for column in table_info:
             column_name = column[1]
             data_type = column[2]
+            if column_name == 'is_repeatable':
+                additional_info = "1 or 0 (1 for true/yes, 0 for false/no)"
             if column_name == 'day_number':
                 additional_info = "Day of the week (0: Sunday, 1: Monday, 2: tuesday, 3: wednesday, 4: thursday, 5: friday, 6: saturday)"
             else:

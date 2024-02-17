@@ -38,11 +38,12 @@ def format_embed(task_data=None) -> str | Dict[str, str]:
     return formatted_task_data
 
 
-def create_embed(notify_tasks) -> List[discord.Embed]:
+def create_embed(notify_tasks, title=None) -> List[discord.Embed]:
     """Creates a Discord embed from given tasks"""
     embeds = []
     for i, task_data in enumerate(notify_tasks):
-        embed = discord.Embed(colour=discord.Color.green(), title=f"Active task {i + 1}")
+        # embed = discord.Embed(colour=discord.Color.green(), title=f"Active task {i + 1}")
+        embed = discord.Embed(colour=discord.Color.green(), title=title)
         for key, value in task_data.items():
             embed.add_field(name=f"{key}", value=value, inline=False)
         embeds.append(embed)

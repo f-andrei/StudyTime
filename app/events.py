@@ -39,14 +39,14 @@ class Events(commands.Cog):
 			channel = bot.get_channel(CHANNEL_ID)
 			if tasks:
 				print('NOTIFY')
-				embeds = create_embed(tasks)
+				embeds = create_embed(tasks, title="Task is due!")
 				for i, embed in enumerate(embeds):
 					await channel.send(embed=embed)
 					# right now it's blocking new tasks from notifying. Has to be fixed.
 					duration = durations[i-1] * 60
 					await asyncio.sleep(duration)
-					# needs to be implemented
-					await channel.send("duration")
+					embed.title="Task ended."
+					await channel.send(embed=embed)
 
 			self.task_scheduler.toggle_scheduler(True)
 		except IndexError as e:

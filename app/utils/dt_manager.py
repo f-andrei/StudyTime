@@ -26,7 +26,7 @@ class DateTimeManager:
 
     def get_due_tasks_time_range(self) -> Tuple[datetime, datetime]:
         current_time = self.get_current_time()
-        end_time_range = current_time - timedelta(minutes=5)
+        end_time_range = current_time - timedelta(minutes=1, seconds=30)
         start_time_range = current_time + timedelta(seconds=10)
 
         return end_time_range, start_time_range

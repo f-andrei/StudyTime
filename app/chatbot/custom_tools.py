@@ -3,11 +3,11 @@ from langchain_core.pydantic_v1 import BaseModel, Field
 from langchain.agents import Tool
 from langchain_core.tools import BaseTool
 from .tools_functions import analyze_all_tables
-from typing import Type
+from typing import Type,  Any
+from utils.embed_utils import display_embed
 import sqlite3
-from langchain.schema import HumanMessage, SystemMessage
-from langchain.schema import HumanMessage, SystemMessage
-from config import model
+import discord
+import asyncio
 
 
 DATABASE_PATH = "app\database\studytime.sqlite3"
@@ -45,7 +45,7 @@ class QueryData(BaseTool):
 
 class DatabaseInfo(BaseTool):
     name: str = "database_info"
-    description: str = f"""Retrieves information about a database. Useful
+    description: str = """Retrieves information about a database. Useful
     when you need to answer about user's tasks or notes. No input needed.
     Contains all the relevant structure about a data base (tables, columns,
     additional information)."""
@@ -58,34 +58,42 @@ class DatabaseInfo(BaseTool):
         except Exception as e:
             return f"Error occurred while retrieving database information: {e}"
 
-class RespondInput(BaseModel):
-    user_message: str = Field(..., description="User message")
+class CreateEmbedInput(BaseModel):
+    query_output: Any = Field(..., description="Output from QueryData")
 
-class Respond(BaseTool):
-    name: str = "respond"
-    args_schema: Type[BaseModel] = RespondInput
-    description: str = f"""This function is useful to respond the user on topics 
-                        not related to databases."""
 
-    def _run(self, user_message) -> str:
+class CreateEmbed(BaseTool):
+    name: str = "create_embed"
+    args_schema: Type[BaseModel] = CreateEmbedInput
+    description: str = """Creates a Discord embed. Useful to format tasks
+    or notes in a nicer way. Takes the ouput from QueryData.
+    Example: 29, 'Programar', 'Discord Bot', 'https://discord.com', '2024-02-17 02:30', 5.0, 1, 227128911576694784
+    id, name, description, links, start_date, duration, is_repeatable, user_id
+    Send only the values, do not send the keys.
+    """
+    def _run(self, query_output: str) -> discord.Embed:
         try:
-            messages = [
-            SystemMessage(
-                content="You are a helpful assistant. You answer in the user's language."
-            ),
-            HumanMessage(
-                content=user_message
-            ),
-            ]
-            response = model(messages)
-            memory.chat_memory.add_ai_message(response)
-            return response
+            query_output = query_output.strip('()')
+            query_output = query_output.replace("'", '')
+            query_output = query_output.split(', ')
+            print(query_output)
+            asyncio.create_task(self.async_display_embed(query_output))
+            memory.chat_memory.add_ai_message('Embed created')
+            return 'Embed sucessfully created'
         except Exception as e:
-            return f"Error occured while responding user message: {e}"
+            return f"An error occurred while creating an embed: {e}"
         
+    async def async_display_embed(self, query_output):
+        try:
+            # Call the asynchronous function
+            result = await display_embed(query_output)
+            return result
+        except Exception as e:
+            print(f"An error occurred while creating an embed: {e}")
+
 db_info = DatabaseInfo()
 db_query = QueryData()
-respond = Respond()
+create_embed = CreateEmbed()
 
 tools = [
     Tool(
@@ -98,10 +106,14 @@ tools = [
         func=db_query.run,
         description="Useful to query data from a structural database. Takes only the SQL query. Adjust the user input so that it matches the database dtypes."
     ),
-    # Tool(
-    #     name="respond",
-    #     func=respond.run,
-    #     description="Useful to respond the user when the message is not related to databases."
-    # )
+    Tool(
+        name="CreateEmbed",
+        func=create_embed.run,
+        description="Useful to create embeds for tasks or notes. Takes the output of QueryData."
+    )
 ]
 
+def handle_async_display_embed(query_output):
+    loop = asyncio.get_event_loop()
+    result = loop.run_until_complete(display_embed(query_output))
+    return result

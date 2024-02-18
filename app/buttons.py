@@ -1,17 +1,17 @@
 import discord
 from database.task_operations import save_repeat_days_to_database
-from config import bot, CHANNEL_ID
-
+from utils.embed_utils import display_embed
 
 
 class DaysToRepeatView(discord.ui.View):
     BLURPLE_STYLE = discord.ButtonStyle.blurple
     RED_STYLE = discord.ButtonStyle.red
     SUCCESS_STYLE = discord.ButtonStyle.success
-    def __init__(self) -> None:
+    def __init__(self, task_data, task_id) -> None:
         super().__init__()
         self.days = []
-
+        self.task_data = task_data
+        self.task_id = task_id
     @discord.ui.button(label="Monday", style=BLURPLE_STYLE)
     async def monday(self, interaction: discord.Interaction, button: discord.ui.Button):
         self.days.append(1)
@@ -64,10 +64,9 @@ class DaysToRepeatView(discord.ui.View):
 
     @discord.ui.button(label="Send", style=SUCCESS_STYLE)
     async def send(self, interaction: discord.Interaction, button: discord.ui.Button):
-        channel = bot.get_channel(CHANNEL_ID)
         save_repeat_days_to_database(self.days)
         for child in self.children:
             child.disabled = True
 
         await interaction.response.edit_message(view=self)
-        await channel.send(f"Task created successfully.")
+        await display_embed(self.task_data, self.task_id, title="Task created sucessfully!")

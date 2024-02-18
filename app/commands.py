@@ -3,10 +3,10 @@ from datetime import datetime, timedelta
 from config import bot, CHANNEL_ID, DISCORD_ID
 from utils.utils import new_task_filter, new_note_filter
 from database.task_operations import delete_task_from_database, get_task_by_id
-from utils.embed_utils import format_embed, create_embed, get_all_notes_embed, creation_success_embed
+from utils.embed_utils import format_embed, get_all_notes_embed, display_embed
 from tasks.tasks import Task
 from buttons import DaysToRepeatView
-from database.task_operations import get_tasks_by_user_id
+from database.task_operations import get_tasks_by_user_id, get_last_task
 from discord.ext import commands
 from discord import app_commands
 from time import sleep
@@ -52,16 +52,12 @@ async def create_task(ctx):
 		task = Task()
 		filtered_task = new_task_filter(new_task)
 		task.create_task(*filtered_task, user_id)
-		task_created_embed = creation_success_embed(filtered_task, title="Task created sucessfully!")
-		await ctx.send(embed=task_created_embed)
+		task_id = get_last_task()
 		# If true, will be shown days of the week as buttons to select repeat days
 		is_repeatable = filtered_task[5]
 		if is_repeatable == 1:
-			view=DaysToRepeatView()
+			view=DaysToRepeatView(filtered_task, task_id)
 			await ctx.send("Select which days to repeat", view=view)
-		else:
-			task_created_embed = creation_success_embed(filtered_task, title="Task created sucessfully!")
-			await ctx.send(embed=task_created_embed)
 		return
 	except Exception as e:
 		print(f"Error in create_task(): {e}")
@@ -81,25 +77,12 @@ async def update_task(ctx):
 		if not tasks:
 			await ctx.reply("No tasks found.")
 			return
-		notify_tasks = []
 		await ctx.send("These are your active tasks: ")
 
 		# Loop through all tasks and append basic info to notify tasks
 		for task in tasks:
-			task_data = {
-				"Task nº": f"```{task[0]}```",
-				"Name": f"```{task[1]}```",
-				"Description": f"```{task[2]}```",
-				"Links": f"```{task[3]}```",
-				"Start Date": f"```{task[4]}```",
-			}
-			notify_tasks.append(task_data)
-
-		# Create an embed for each task in notify_tasks
-		embeds = create_embed(notify_tasks)
-		for embed in embeds:
-			await ctx.send(embed=embed)
-			sleep(0.5)
+			await display_embed(task, title="Task")
+			sleep(0.3)
 		await ctx.send("Which task would you like to update? (Task nº)")
 
 		# Waits for the user's next message containing the task's id to be updated
@@ -109,6 +92,12 @@ async def update_task(ctx):
 				task_id = msg.content
 				task_id = int(task_id)
 				break
+
+		task = get_task_by_id(task_id)
+		if not task:
+			await ctx.reply(f"Task with ID {task_id} not found.")
+			return
+		
 		await ctx.send("Type in the updated task info:"
 				 f"```Study, Study Python, https://discord.com, {dt_manager.format_datetime(one_minute_later)}, 5, 1```\n"
 						"*Ensure that the string above is passed to the program as "
@@ -136,8 +125,7 @@ async def update_task(ctx):
 				duration=filtered_task[4],
 				is_repeatable=filtered_task[5]
 			)
-			embed = creation_success_embed(filtered_task, title="Task updated sucessfully!")
-			await ctx.send(embed=embed)
+			await display_embed(filtered_task, title="Task updated sucessfully!")
 		else:
 			await ctx.send(f'Task with ID {task_id} not found.')
 
@@ -176,17 +164,9 @@ async def all_tasks(ctx: commands.Context) -> None:
 			embed = discord.Embed(colour=discord.Color.red(), title="You don't have any tasks yet!")
 			embed.add_field(name=f"Create one using:", value=f"```/create_task```", inline=False)
 			await ctx.send(embed=embed)
-		notify_tasks = []
 		
-		# Appends each embed to notify tasks
 		for task in tasks:
-			task_data = format_embed(task)
-			notify_tasks.append(task_data)
-
-		# Create an embed for each task
-		embeds = create_embed(notify_tasks)
-		for embed in embeds:
-			await ctx.send(embed=embed)
+			await display_embed(task, title="Task")
 			sleep(0.3)
 
 	except Exception as e:
@@ -247,8 +227,7 @@ async def create_note(ctx):
 		note = Note()
 		filtered_note = new_note_filter(user_message)
 		note.create_note(*filtered_note, user_id=user_id)
-		embed = creation_success_embed(filtered_note, title="Note created sucessfully!")
-		await ctx.send(embed=embed)
+		await display_embed(filtered_note, title="Note created sucessfully!")
 		return
 	except Exception as e:
 		print(f"Error creating note: {e}")
@@ -314,8 +293,7 @@ async def update_note(ctx):
 		updated_note_data = new_note_filter(user_message)
 		note = Note()
 		note.update_note(note_id, *updated_note_data)
-		embed = creation_success_embed(updated_note_data, title="Note updated successfully!")
-		await ctx.send(embed=embed)
+		await display_embed(updated_note_data, title="Note updated successfully!")
 	except Exception as e:
 		print(f"Error updating note: {e}")
 

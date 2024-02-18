@@ -5,7 +5,7 @@ from tasks.reminder import TaskScheduler
 from database.task_operations import get_task_by_id
 import asyncio
 from typing import List
-from utils.embed_utils import create_embed, format_embed
+from utils.embed_utils import display_embed
 
 
 class Events(commands.Cog):
@@ -39,18 +39,15 @@ class Events(commands.Cog):
 			channel = bot.get_channel(CHANNEL_ID)
 			if tasks:
 				print('NOTIFY')
-				embeds = create_embed(tasks, title="Task is due!")
-				for i, embed in enumerate(embeds):
-					await channel.send(embed=embed)
-					# right now it's blocking new tasks from notifying. Has to be fixed.
-					duration = durations[i-1] * 60
-					await asyncio.sleep(duration)
-					embed.title="Task ended."
-					await channel.send(embed=embed)
+				await display_embed(tasks, title="Task is due!", color=discord.Color.dark_orange())
+				duration = durations[0] * 60
+				await asyncio.sleep(duration)
+				title="Task ended."
+				await display_embed(tasks, title=title, color=discord.Color.pink())
 
 			self.task_scheduler.toggle_scheduler(True)
 		except IndexError as e:
-			print(f"Error in remind_tasks(): {e}")
+			print(f"Error in notify_tasks(): {e}")
 
 	@tasks.loop(seconds=REMIND_LOOP_INTERVAL)
 	async def remind_tasks(self) -> None:
@@ -66,9 +63,7 @@ class Events(commands.Cog):
 					try:
 						task_data = await asyncio.to_thread(get_task_by_id, task_id)
 						task_data = task_data[0]
-						formatted_task_data = format_embed(task_data=task_data)
-
-						notify_tasks.append(formatted_task_data)
+						notify_tasks.append(task_data)
 						durations.append(task_data[5])
 					except IndexError:
 						# Since this program is supposed to run continuously, the user may
@@ -79,11 +74,10 @@ class Events(commands.Cog):
 						print(f"IndexError: Task with ID {task_id} not found.")
 						if not due_task_ids:
 							break
-			await self.notify_tasks(notify_tasks, durations)
+			if notify_tasks:
+				await self.notify_tasks(notify_tasks[0], durations)
 		except IndexError as e:
-
 			print(f"Error in remind_tasks(): {e}")
-
 	@tasks.loop(seconds=STATUS_LOOP_INTERVAL)
 	async def statusloop(self) -> None:
 		"""Discord status loop"""

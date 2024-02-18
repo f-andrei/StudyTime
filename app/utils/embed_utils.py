@@ -1,9 +1,9 @@
 from datetime import datetime
 from utils.dt_manager import DateTimeManager
 import discord
-from typing import List, Dict
-
-
+from typing import Dict
+from config import CHANNEL_ID, bot
+from database.task_operations import get_due_tasks_days
 
 dt_manager = DateTimeManager('America/Sao_Paulo')
 dt_now = datetime.now()
@@ -38,36 +38,71 @@ def format_embed(task_data=None) -> str | Dict[str, str]:
     return formatted_task_data
 
 
-def create_embed(notify_tasks, title=None) -> List[discord.Embed]:
-    """Creates a Discord embed from given tasks"""
-    embeds = []
-    for i, task_data in enumerate(notify_tasks):
-        # embed = discord.Embed(colour=discord.Color.green(), title=f"Active task {i + 1}")
-        embed = discord.Embed(colour=discord.Color.green(), title=title)
-        for key, value in task_data.items():
-            embed.add_field(name=f"{key}", value=value, inline=False)
-        embeds.append(embed)
-    return embeds
+async def display_embed(data, id=None, title=None, color=discord.Color.brand_green()):
+    channel = bot.get_channel(CHANNEL_ID)
+    name = ""
+    description = ""
+    links = ""
+    start_date = ""
+    duration = ""
+    is_repeatable = ""
+    repeat_days = []
+    repeat_days_list = []
+    match len(data):
+        case 8:
+            id, name, description, links, start_date, duration, is_repeatable, is_repeatable = data
+        case 7:
+            name, description, links, start_date, duration, is_repeatable, repeat_days = data
+        case 6:
+            name, description, links, start_date, duration, is_repeatable = data
+        case 5:
+            name, description, links, status, created_at = data
+        case 3:
+            name, description, links = data
+        case n if n > 8:
+            id, name, description, links, start_date, duration, is_repeatable, *repeat_days = data
 
+    number_to_day = {
+        0: "Sunday",
+        1: "Monday",
+        2: "Tuesday",
+        3: "Wednesday",
+        4: "Thursday",
+        5: "Friday",
+        6: "Saturday"
+    }
 
-def creation_success_embed(data, title=None):
-    if len(data) == 6:
-        name, description, links, start_date, duration, is_repeatable = data
-        embed = discord.Embed(colour=discord.Color.brand_green(), title=title)
-        embed.add_field(name=f"Title", value=f"```{name}```", inline=False)
-        embed.add_field(name=f"Description", value=f"```{description}```", inline=False)
-        embed.add_field(name=f"Links", value=f"```{links}```", inline=False)
-        embed.add_field(name=f"Start date", value=f"```{start_date}```", inline=False)
-        embed.add_field(name=f"Duration", value=f"```{duration}```", inline=False)
-        embed.add_field(name=f"Is repeatable", value=f"```{is_repeatable}```", inline=False)
-        return embed
+    repeat_days = get_due_tasks_days(id)
+    if repeat_days:
+        try:
+            for _, day in repeat_days:
+                repeat_days_list.append(number_to_day[day])
+            is_repeatable = repeat_days_list
+            if len(is_repeatable) > 1:
+                is_repeatable = ', '.join(is_repeatable)
+            else:
+                is_repeatable = is_repeatable[0]
+        except Exception as e:
+            print(e)
     else:
-        name, description, links = data
-        embed = discord.Embed(colour=discord.Color.brand_green(), title=title)
-        embed.add_field(name=f"Title", value=f"```{name}```", inline=False)
-        embed.add_field(name=f"Description", value=f"```{description}```", inline=False)
-        embed.add_field(name=f"Links", value=f"```{links}```", inline=False)
-        return embed
+        is_repeatable = 'Not repeatable'
+    if len(data) > 5:
+        fields = {
+            "ID": id,
+            "Title": name, 
+            "Description": description, 
+            "Links": links, 
+            "Start date": start_date, 
+            "Duration": duration,
+            "Repeat days": is_repeatable
+            }
+    else:
+        fields = {"Title": name, "Description": description, "Links": links}
+    embed = discord.Embed(colour=color, title=title)
+    for field, value in fields.items():
+        embed.add_field(name=field, value=f"```{value}```", inline=False)
+    await channel.send(embed=embed)
+    return 'success'
 
 def get_all_notes_embed(all_notes):
     try:
@@ -75,13 +110,10 @@ def get_all_notes_embed(all_notes):
             embeds = []
             for note in all_notes:
                 embed = discord.Embed(colour=discord.Color.magenta(), title="Note")
-                embed.add_field(name=f"ID", value=f"```{note[0]}```", inline=False)
-                embed.add_field(name=f"Title", value=f"```{note[1]}```", inline=False)
-                embed.add_field(name=f"Description", value=f"```{note[2]}```", inline=False)
-                embed.add_field(name=f"Links", value=f"```{note[3]}```", inline=False)
-                embed.add_field(name=f"Status", value=f"```{note[4]}```", inline=False)
-                embed.add_field(name=f"Created at", value=f"```{note[5]}```", inline=False)
+                fields = ["ID", "Title", "Description", "Links", "Status", "Created at"]
+                for i, field in enumerate(fields):
+                    embed.add_field(name=field, value=f"```{note[i]}```", inline=False)
                 embeds.append(embed)
             return embeds      
     except Exception as e:
-         ...
+        print(f"Error at get_all_notes_embed(): {e}")

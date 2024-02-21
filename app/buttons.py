@@ -3,15 +3,18 @@ from database.task_operations import save_repeat_days_to_database
 from utils.embed_utils import display_embed
 
 
+
 class DaysToRepeatView(discord.ui.View):
     BLURPLE_STYLE = discord.ButtonStyle.blurple
     RED_STYLE = discord.ButtonStyle.red
     SUCCESS_STYLE = discord.ButtonStyle.success
-    def __init__(self, task_data, task_id) -> None:
+    def __init__(self, task_data, task_id, msg_id) -> None:
         super().__init__()
         self.days = []
         self.task_data = task_data
         self.task_id = task_id
+        self.msg_id = msg_id
+
     @discord.ui.button(label="Monday", style=BLURPLE_STYLE)
     async def monday(self, interaction: discord.Interaction, button: discord.ui.Button):
         self.days.append(1)
@@ -69,4 +72,7 @@ class DaysToRepeatView(discord.ui.View):
             child.disabled = True
 
         await interaction.response.edit_message(view=self)
-        await display_embed(self.task_data, self.task_id, title="Task created sucessfully!")
+        await interaction.followup.delete_message(self.msg_id)
+        await display_embed(self.task_data, self.task_id, title="Task created sucessfully!", del_after=86400, type='task')
+
+

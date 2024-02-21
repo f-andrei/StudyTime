@@ -36,14 +36,13 @@ class Events(commands.Cog):
 	async def notify_tasks(self, tasks: List[str], durations: List[float]) -> None:
 		"""Task notifier (sends a message with an embed)"""
 		try:
-			channel = bot.get_channel(CHANNEL_ID)
 			if tasks:
 				print('NOTIFY')
-				await display_embed(tasks, title="Task is due!", color=discord.Color.dark_orange())
 				duration = durations[0] * 60
+				await display_embed(tasks, title="Task is due!", del_after=duration, color=discord.Color.dark_orange(), type='task')
 				await asyncio.sleep(duration)
 				title="Task ended."
-				await display_embed(tasks, title=title, color=discord.Color.pink())
+				await display_embed(tasks, title=title, color=discord.Color.pink(), del_after=86400, type='task')
 
 			self.task_scheduler.toggle_scheduler(True)
 		except IndexError as e:

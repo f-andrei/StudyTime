@@ -24,8 +24,8 @@ def save_note_to_database(note):
     with establish_connection() as connection:
         try:
             cursor = connection.cursor()
-            cursor.execute(f"INSERT INTO {NOTES_TABLE} (name, description, links, status, created_at, user_id) VALUES (?, ?, ?, ?, ?, ?)",
-                        (note.name, note.description, note.links, note.status, note.created_at, note.user_id))
+            cursor.execute(f"INSERT INTO {NOTES_TABLE} (name, description, links, created_at, user_id) VALUES (?, ?, ?, ?, ?)",
+                        (note.name, note.description, note.links, note.created_at, note.user_id))
             connection.commit()
             note.note_id = cursor.lastrowid
             print(f"Note '{note.name}' successfully inserted into the database.")
@@ -76,5 +76,7 @@ def delete_note_from_database(note_id):
             cursor.execute(f'DELETE FROM {NOTES_TABLE} WHERE id = ?', (note_id,))
             connection.commit()
             print(f"Note with ID {note_id} deleted successfully.")
+            return True
         except sqlite3.Error as e:
             print(f"Error deleting note from the database: {e}")
+            return False

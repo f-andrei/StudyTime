@@ -22,8 +22,8 @@ def save_task_to_database(task):
     with establish_connection() as connection:
         try:
             cursor = connection.cursor()
-            cursor.execute(f"INSERT INTO {TASK_TABLE} (name, description, links, start_date, duration, is_repeatable, user_id) VALUES (?, ?, ?, ?, ?, ?, ?)",
-                        (task.name, task.description, task.links, task.start_date, task.duration, task.is_repeatable, task.user_id))
+            cursor.execute(f"INSERT INTO {TASK_TABLE} (name, description, links, start_date, duration, user_id) VALUES (?, ?, ?, ?, ?, ?)",
+                        (task.name, task.description, task.links, task.start_date, task.duration, task.user_id))
             connection.commit()
             task.task_id = cursor.lastrowid
             print(f"Task '{task.name}' successfully inserted into the database.")
@@ -81,14 +81,14 @@ def get_tasks_by_user_id(user_id):
             
 
 
-def update_task_in_database(task_id, name, description, links, start_date, duration, is_repeatable):
+def update_task_in_database(task_id, name, description, links, start_date, duration):
     with establish_connection() as connection:
         try:
             cursor = connection.cursor()
             cursor.execute(
-                f'UPDATE {TASK_TABLE} SET name=?, description=?, links=?, start_date=?, duration=?, '
-                'is_repeatable=? WHERE id=?',
-                (name, description, links, start_date, duration, is_repeatable, task_id)
+                f'UPDATE {TASK_TABLE} SET name=?, description=?, links=?, start_date=?, duration=? '
+                'WHERE id=?',
+                (name, description, links, start_date, duration, task_id)
             )
             connection.commit()
         except Exception as e:
@@ -102,9 +102,10 @@ def delete_task_from_database(task_id):
             cursor.execute(f'DELETE FROM {TASK_TABLE} WHERE id = ?', (task_id,))
             connection.commit()
             print(f"Task with ID {task_id} deleted successfully.")
+            return True
         except sqlite3.Error as e:
             print(f"Error deleting task from the database: {e}")
-
+            return False
 
 def get_due_tasks():
     end_time_range, start_time_range = dt_manager.get_due_tasks_time_range()
@@ -128,3 +129,4 @@ def get_due_tasks_days(task_id):
         except sqlite3.Error as e:
             print(e)
     return task_days
+

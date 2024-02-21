@@ -41,7 +41,6 @@ def initialize_database():
                 ('links', 'TEXT'),
                 ('start_date', 'DATETIME'),
                 ('duration', 'FLOAT'),
-                ('is_repeatable', 'INTEGER'),
                 ('user_id', 'INTEGER'),
                 (f'FOREIGN KEY (user_id) REFERENCES {USER} (id)', '')
             ])
@@ -59,7 +58,6 @@ def initialize_database():
                 ('name', 'TEXT'),
                 ('description', 'TEXT'),
                 ('links', 'TEXT'),
-                ('status', 'TEXT'),
                 ('created_at', 'DATETIME'),
                 ('user_id', 'INTEGER'),
             ])

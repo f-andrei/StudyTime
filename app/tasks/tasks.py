@@ -1,4 +1,4 @@
-from database.task_operations import save_task_to_database, update_task_in_database
+from database.task_operations import save_task_to_database, update_task_in_database, get_task_by_id
 from datetime import datetime
 from typing import Optional
 
@@ -8,23 +8,22 @@ class Task:
             name: str,
             description: str,
             links: Optional[str],
-            start_date_str: str,
+            start_date: str,
             duration: float,
-            is_repeatable: int,
             user_id: int
     ) -> None:
         try:
             self.name = name
             self.description = description
             self.links = links
-            self.start_date = datetime.strptime(start_date_str, "%d/%m/%Y %H:%M:%S")
+            self.start_date = datetime.strptime(start_date, "%d/%m/%Y %H:%M:%S")
             self.duration = duration
-            self.is_repeatable = is_repeatable
             self.user_id = user_id
             save_task_to_database(self)
-
+            return True
         except Exception as e:
             print(f"Error creating task: {e}")
+            return False
 
     def update_task(
         self,
@@ -32,32 +31,40 @@ class Task:
         name: Optional[str] = None,
         description: Optional[str] = None,
         links: Optional[str] = None,
-        start_date_str: Optional[str] = None,
+        start_date: Optional[str] = None,
         duration: Optional[float] = None,
-        is_repeatable: Optional[int] = None
-    ) -> None:
+    ) -> bool:
         try:
-            if name is not None:
-                self.name = name.strip().capitalize()
+            self.name = name
+            self.description = description
+            self.links = links
+            if start_date:
+                self.start_date = datetime.strptime(start_date, "%d/%m/%Y %H:%M:%S")
+            else:
+                self.start_date = start_date
+            self.duration = duration
+            
+            existing_task = get_task_by_id(task_id)
+            existing_task = existing_task[0]
 
-            if description is not None:
-                self.description = description
+            if name is None:
+                self.name = existing_task[1]
 
-            if links is not None:
-                self.links = links
+            if description is None:
+                self.description = existing_task[2]
 
-            if start_date_str is not None:
-                self.start_date = datetime.strptime(start_date_str, "%d/%m/%Y %H:%M:%S")
+            if links is None:
+                self.links = existing_task[3]
 
-            if duration is not None:
-                self.duration = duration
+            if start_date is None:
+                self.start_date = existing_task[4]
 
-            if is_repeatable is not None:
-                self.is_repeatable = is_repeatable
+            if duration is None:
+                self.duration = existing_task[5]
 
             update_task_in_database(task_id, self.name, self.description, self.links, self.start_date,
-                                    self.duration, self.is_repeatable)
-
+                                    self.duration)
+            return True
         except Exception as e:
             print(f"Error updating task: {e}")
-
+            return False

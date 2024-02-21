@@ -68,7 +68,7 @@ class CreateEmbed(BaseTool):
     description: str = """Creates a Discord embed. Useful to format tasks
     or notes in a nicer way. Takes the ouput from QueryData.
     Example: 29, 'Programar', 'Discord Bot', 'https://discord.com', '2024-02-17 02:30', 5.0, 1, 227128911576694784
-    id, name, description, links, start_date, duration, is_repeatable, user_id
+    id, name, description, links, start_date, duration, user_id
     Send only the values, do not send the keys.
     """
     def _run(self, query_output: str) -> discord.Embed:
@@ -76,17 +76,24 @@ class CreateEmbed(BaseTool):
             query_output = query_output.strip('()')
             query_output = query_output.replace("'", '')
             query_output = query_output.split(', ')
-            print(query_output)
-            asyncio.create_task(self.async_display_embed(query_output))
+            print(len(query_output))
+            if len(query_output) >= 7:
+                print('task')
+                embed_type = 'task'
+            else:
+                print('note')
+                embed_type = 'note'
+            asyncio.create_task(self.async_display_embed(query_output, embed_type))
             memory.chat_memory.add_ai_message('Embed created')
             return 'Embed sucessfully created'
         except Exception as e:
             return f"An error occurred while creating an embed: {e}"
         
-    async def async_display_embed(self, query_output):
+    async def async_display_embed(self, query_output, embed_type):
         try:
             # Call the asynchronous function
-            result = await display_embed(query_output)
+            embed_type = embed_type.lower()
+            result = await display_embed(query_output, type=embed_type)
             return result
         except Exception as e:
             print(f"An error occurred while creating an embed: {e}")
@@ -113,7 +120,7 @@ tools = [
     )
 ]
 
-def handle_async_display_embed(query_output):
+def handle_async_display_embed(query_output, embed_type):
     loop = asyncio.get_event_loop()
-    result = loop.run_until_complete(display_embed(query_output))
+    result = loop.run_until_complete(display_embed(query_output, embed_type))
     return result

@@ -25,7 +25,7 @@ class TaskScheduler:
             tasks_dict = {}
             
             for task in due_tasks:
-                task_id, _, _, _, _, _, _, _ = task
+                task_id, _, _, _, _, _, _, = task
                 task_days = await asyncio.to_thread(get_due_tasks_days, task_id)
                 tasks_dict.setdefault(task_id, {'days': []})
                 tasks_dict[task_id]['days'].extend(day[1] for day in task_days)

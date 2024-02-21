@@ -15,6 +15,11 @@ class DateTimeManager:
             datetime_now = datetime_now.replace(tzinfo=timezone('UTC')).astimezone(new_tz)
         return datetime_now
 
+    def get_day_number(self, datetime_str):
+        dt_obj = datetime.strptime(datetime_str, "%d/%m/%Y %H:%M:%S")
+        day_number = dt_obj.weekday()
+        return (day_number + 1) % 7
+
     def get_formatted_datetime_now(self) -> str:
         datetime_now = self.get_current_time()
         formatted_datetime_now = datetime_now.strftime(self.datetime_format)

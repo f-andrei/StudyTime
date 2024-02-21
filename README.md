@@ -6,15 +6,11 @@ The StudyTime Discord Bot is an application developed for Discord with the aim o
 
 1. **Task Management**
    - **/create_task:** Creates a new task.
-   - **/update_task:** Updates an existing task.
-   - **/tasks:** Lists all available tasks.
-   - **/delete_task [Task ID]:** Deletes an existing task.
+   - **/tasks:** Lists all tasks. For each task there are buttons to Edit and Delete task.
 
 2. **Note Management**
    - **/create_note:** Creates a new note.
-   - **/update_note:** Updates an existing note.
-   - **/notes:** Lists all available notes.
-   - **/delete_note [Note ID]:** Deletes an existing note.
+   - **/notes:** Lists all notes. For each task there are buttons to Edit and Delete note.
 
 3. **Chat with ChatGPT**
    - **/chat:** Initiates a conversation with ChatGPT to get answers to your questions or start a conversation.

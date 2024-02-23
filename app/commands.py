@@ -12,6 +12,7 @@ from ui.task_modal import  EditTask, TaskModal
 from ui.note_modal import EditNote, NoteModal
 
 
+
 TIMEZONE = 'America/Sao_Paulo'
 dt_manager = DateTimeManager(TIMEZONE)
 
@@ -90,7 +91,7 @@ async def all_notes(ctx):
 
 @bot.hybrid_command(name="chat", description="Chat with ChatGPT")
 @app_commands.guilds(DISCORD_ID)
-async def chatgpt(ctx):
+async def chat(ctx):
 	"""Calls OpenAI's GPT API"""
 	try:
 		channel = bot.get_channel(CHANNEL_ID)
@@ -120,7 +121,7 @@ async def chatgpt(ctx):
 				await ctx.send("You left the chat.")
 				return
 	except Exception as e:
-		raise e
+		print(f"Error at chat(): {e}")
 
 
 # sync new commands

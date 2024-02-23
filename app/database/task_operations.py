@@ -22,8 +22,8 @@ def save_task_to_database(task):
     with establish_connection() as connection:
         try:
             cursor = connection.cursor()
-            cursor.execute(f"INSERT INTO {TASK_TABLE} (name, description, links, start_date, duration, user_id) VALUES (?, ?, ?, ?, ?, ?)",
-                        (task.name, task.description, task.links, task.start_date, task.duration, task.user_id))
+            cursor.execute(f"INSERT INTO {TASK_TABLE} (name, description, links, start_date, time, duration, user_id) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                        (task.name, task.description, task.links, task.start_date, task.time, task.duration, task.user_id))
             connection.commit()
             task.task_id = cursor.lastrowid
             print(f"Task '{task.name}' successfully inserted into the database.")
@@ -81,14 +81,14 @@ def get_tasks_by_user_id(user_id):
             
 
 
-def update_task_in_database(task_id, name, description, links, start_date, duration):
+def update_task_in_database(task_id, name, description, links, start_date, time, duration):
     with establish_connection() as connection:
         try:
             cursor = connection.cursor()
             cursor.execute(
-                f'UPDATE {TASK_TABLE} SET name=?, description=?, links=?, start_date=?, duration=? '
+                f'UPDATE {TASK_TABLE} SET name=?, description=?, links=?, start_date=?, time=?, duration=? '
                 'WHERE id=?',
-                (name, description, links, start_date, duration, task_id)
+                (name, description, links, start_date, time, duration, task_id)
             )
             connection.commit()
         except Exception as e:
@@ -108,16 +108,26 @@ def delete_task_from_database(task_id):
             return False
 
 def get_due_tasks():
-    end_time_range, start_time_range = dt_manager.get_due_tasks_time_range()
+    due_tasks = []
     with establish_connection() as connection:
         try:
+            current_datetime = dt_manager.get_current_time()
+            todays_date = current_datetime.strftime('%Y-%m-%d')  # Use 'YYYY-MM-DD' format
+            todays_date_number = current_datetime.weekday()
+            end_time, start_time = dt_manager.get_due_tasks_time_range()
             cursor = connection.cursor()
-            cursor.execute("SELECT * FROM tasks WHERE start_date BETWEEN ? AND ?",
-                           (end_time_range, start_time_range))
+            cursor.execute("""
+                SELECT tasks.*
+                FROM tasks
+                LEFT JOIN repeat_days ON tasks.id = repeat_days.task_id
+                WHERE (DATE(tasks.start_date) = ? OR repeat_days.day_number = ?)
+                      AND TIME(tasks.time) BETWEEN ? AND ?
+            """, (todays_date, todays_date_number, end_time, start_time))
             due_tasks = cursor.fetchall()
-        except Exception as e:
+        except sqlite3.Error as e:
             print(e)
     return due_tasks
+
 
 
 def get_due_tasks_days(task_id):
@@ -127,6 +137,6 @@ def get_due_tasks_days(task_id):
             cursor.execute(f'SELECT * FROM repeat_days WHERE task_id=?', (task_id,))
             task_days = cursor.fetchall()
         except sqlite3.Error as e:
-            print(e)
+            print(f"Error at get_due_tasks_days: {e}")
     return task_days
 

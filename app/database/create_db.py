@@ -39,7 +39,8 @@ def initialize_database():
                 ('name', 'TEXT'),
                 ('description', 'TEXT'),
                 ('links', 'TEXT'),
-                ('start_date', 'DATETIME'),
+                ('start_date', 'DATE'),
+                ('time', 'TIME'),
                 ('duration', 'FLOAT'),
                 ('user_id', 'INTEGER'),
                 (f'FOREIGN KEY (user_id) REFERENCES {USER} (id)', '')
@@ -47,6 +48,7 @@ def initialize_database():
 
             # Create child table
             create_table(cur, REPEAT_DAYS, [
+                ('id', 'INTEGER PRIMARY KEY AUTOINCREMENT'),
                 ('task_id', 'INTEGER'),
                 ('day_number', 'INTEGER'),
                 (f'FOREIGN KEY (task_id) REFERENCES {TASKS} (id)', ''),

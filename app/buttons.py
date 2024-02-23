@@ -73,6 +73,11 @@ class DaysToRepeatView(discord.ui.View):
 
         await interaction.response.edit_message(view=self)
         await interaction.followup.delete_message(self.msg_id)
+        task_data = self.task_data
+        dt, duration = task_data[3].split(' '), task_data[4]
+        task_data[3], task_data[4] = dt[0], dt[1]
+        task_data.append(duration)
+        self.task_data = task_data
         await display_embed(self.task_data, self.task_id, title="Task created sucessfully!", del_after=86400, type='task')
 
 

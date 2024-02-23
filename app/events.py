@@ -63,7 +63,7 @@ class Events(commands.Cog):
 						task_data = await asyncio.to_thread(get_task_by_id, task_id)
 						task_data = task_data[0]
 						notify_tasks.append(task_data)
-						durations.append(task_data[5])
+						durations.append(task_data[6])
 					except IndexError:
 						# Since this program is supposed to run continuously, the user may
 						# decide to delete a task, in this case to avoid crashes, said

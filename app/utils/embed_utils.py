@@ -20,12 +20,12 @@ async def display_embed(data, id=None, title=None, type=None, del_after=None, co
     repeat_days_list = []
     if type == 'task':
         match len(data):
+            case 9:
+                id, name, description, links, start_date, time, duration, user_id, repeat_days = data
             case 8:
-                id, name, description, links, start_date, duration, user_id, repeat_days = data
-            case 7:
-                id, name, description, links, start_date, duration, user_id = data
+                id, name, description, links, start_date, time, duration, user_id = data
             case 6:
-                name, description, links, start_date, duration, repeat_days = data
+                name, description, links, start_date, time, duration = data
             case 5:
                 name, description, links, start_date, duration = data
 
@@ -54,7 +54,7 @@ async def display_embed(data, id=None, title=None, type=None, del_after=None, co
     repeat_days = get_due_tasks_days(id)
     if repeat_days:
         try:
-            for _, day in repeat_days:
+            for _, _, day in repeat_days:
                 repeat_days_list.append(number_to_day[day])
             is_repeatable = repeat_days_list
             if len(is_repeatable) > 1:
@@ -62,7 +62,7 @@ async def display_embed(data, id=None, title=None, type=None, del_after=None, co
             else:
                 is_repeatable = is_repeatable[0]
         except Exception as e:
-            print(e)
+            print(f"Error at display_embeds: {e}")
     else:
         is_repeatable = 'Not repeatable'
     if type == 'task':
@@ -70,7 +70,8 @@ async def display_embed(data, id=None, title=None, type=None, del_after=None, co
             "Name": name, 
             "Description": description, 
             "Links": links, 
-            "Start date": start_date, 
+            "Start date": start_date,
+            "Time": time,
             "Duration": duration,
             "Repeat days": is_repeatable
             }

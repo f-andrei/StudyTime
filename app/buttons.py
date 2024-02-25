@@ -17,43 +17,43 @@ class DaysToRepeatView(discord.ui.View):
 
     @discord.ui.button(label="Monday", style=BLURPLE_STYLE)
     async def monday(self, interaction: discord.Interaction, button: discord.ui.Button):
-        self.days.append(1)
+        self.days.append(0)
         button.disabled = True
         await interaction.response.edit_message(view=self)
 
     @discord.ui.button(label="Tuesday", style=BLURPLE_STYLE)
     async def tuesday(self, interaction: discord.Interaction, button: discord.ui.Button):
-        self.days.append(2)
+        self.days.append(1)
         button.disabled = True
         await interaction.response.edit_message(view=self)
 
     @discord.ui.button(label="Wednesday", style=BLURPLE_STYLE)
     async def wednesday(self, interaction: discord.Interaction, button: discord.ui.Button):
-        self.days.append(3)
+        self.days.append(2)
         button.disabled = True
         await interaction.response.edit_message(view=self)
 
     @discord.ui.button(label="Thursday", style=BLURPLE_STYLE)
     async def thursday(self, interaction: discord.Interaction, button: discord.ui.Button):
-        self.days.append(4)
+        self.days.append(3)
         button.disabled = True
         await interaction.response.edit_message(view=self)
 
     @discord.ui.button(label="Friday", style=BLURPLE_STYLE)
     async def friday(self, interaction: discord.Interaction, button: discord.ui.Button):
-        self.days.append(5)
+        self.days.append(4)
         button.disabled = True
         await interaction.response.edit_message(view=self)
 
     @discord.ui.button(label="Saturday", style=BLURPLE_STYLE)
     async def saturday(self, interaction: discord.Interaction, button: discord.ui.Button):
-        self.days.append(6)
+        self.days.append(5)
         button.disabled = True
         await interaction.response.edit_message(view=self)
 
     @discord.ui.button(label="Sunday", style=BLURPLE_STYLE)
     async def sunday(self, interaction: discord.Interaction, button: discord.ui.Button):
-        self.days.append(0)
+        self.days.append(6)
         button.disabled = True
         await interaction.response.edit_message(view=self)
 

@@ -42,13 +42,13 @@ async def display_embed(data, id=None, title=None, type=None, del_after=None, co
 
 
     number_to_day = {
-        0: "Sunday",
-        1: "Monday",
-        2: "Tuesday",
-        3: "Wednesday",
-        4: "Thursday",
-        5: "Friday",
-        6: "Saturday"
+        6: "Sunday",
+        0: "Monday",
+        1: "Tuesday",
+        2: "Wednesday",
+        3: "Thursday",
+        4: "Friday",
+        5: "Saturday"
     }
 
     repeat_days = get_due_tasks_days(id)

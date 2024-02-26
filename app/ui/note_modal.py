@@ -1,9 +1,7 @@
 from discord import ui
 import discord
-from datetime import datetime
-from utils.dt_manager import DateTimeManager
 from notes.notes import Note
-from database.notes_operations import get_note_by_id, save_note_to_database, delete_note_from_database
+from database.notes_operations import get_note_by_id, delete_note_from_database
 from config import DELETE_AFTER
 from utils.embed_utils import display_embed
 

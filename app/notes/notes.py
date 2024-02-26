@@ -24,7 +24,7 @@ class Note:
             save_note_to_database(self)
             return True
         except Exception as e:
-            print(f"Error creating task: {e}")
+            print(f"Error creating note: {e}")
             return False
     def update_note(
             self,
@@ -41,7 +41,7 @@ class Note:
 
             existing_note = get_note_by_id(note_id)
             existing_note = existing_note[0]
-            print(existing_note)
+            
             if name is None:
                 self.name = existing_note[1]
 

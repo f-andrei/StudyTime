@@ -125,7 +125,7 @@ def get_due_tasks():
             """, (todays_date, todays_date_number, end_time, start_time))
             due_tasks = cursor.fetchall()
         except sqlite3.Error as e:
-            print(e)
+            print(f"Error at get_due_tasks: {e}")
     return due_tasks
 
 

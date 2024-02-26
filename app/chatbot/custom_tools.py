@@ -76,12 +76,9 @@ class CreateEmbed(BaseTool):
             query_output = query_output.strip('()')
             query_output = query_output.replace("'", '')
             query_output = query_output.split(', ')
-            print(len(query_output))
             if len(query_output) >= 7:
-                print('task')
                 embed_type = 'task'
             else:
-                print('note')
                 embed_type = 'note'
             asyncio.create_task(self.async_display_embed(query_output, embed_type))
             memory.chat_memory.add_ai_message('Embed created')

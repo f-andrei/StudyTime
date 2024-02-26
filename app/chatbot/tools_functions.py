@@ -8,11 +8,9 @@ def analyze_all_tables():
     with sqlite3.connect(DATABASE_PATH) as conn:
         cur = conn.cursor()
 
-        # Query the list of all tables in the database
         cur.execute("SELECT name FROM sqlite_master WHERE type='table';")
         tables = cur.fetchall()
 
-        # Iterate over each table and print its information
         result = []
         for table in tables:
             table_name = table[0]

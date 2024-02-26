@@ -41,9 +41,13 @@ class Task:
         duration: Optional[float] = None,
     ) -> bool:
         try:
+            existing_task = get_task_by_id(task_id)
+            existing_task = existing_task[0]
+
             self.name = name
             self.description = description
             self.links = links
+            
             if start_date:
                 start_date = datetime.strptime(start_date, "%d/%m/%Y %H:%M:%S")
                 start_date = datetime.strftime(start_date, "%d/%m/%Y %H:%M:%S")
@@ -51,15 +55,13 @@ class Task:
                 date = start_date[0]
                 time = start_date[1]
                 self.start_date = date
+                self.time = time
             else:
                 self.start_date = start_date
-            
-            self.time = time
+                self.time = existing_task[5]
+
             self.duration = duration
             
-            existing_task = get_task_by_id(task_id)
-            existing_task = existing_task[0]
-
             if name is None:
                 self.name = existing_task[1]
 
@@ -76,7 +78,7 @@ class Task:
             if duration is None:
                 self.duration = existing_task[6]
 
-            update_task_in_database(task_id, self.name, self.description, self.links, self.start_date, time,
+            update_task_in_database(task_id, self.name, self.description, self.links, self.start_date, self.time,
                                     self.duration)
             return True
         except Exception as e:

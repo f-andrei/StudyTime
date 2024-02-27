@@ -1,11 +1,11 @@
-from datetime import datetime
 from utils.dt_manager import DateTimeManager
 import discord
 from config import CHANNEL_ID, bot, DELETE_AFTER
 from database.task_operations import get_due_tasks_days
+from config import TIMEZONE
 
-dt_manager = DateTimeManager('America/Sao_Paulo')
-dt_now = datetime.now()
+dt_manager = DateTimeManager(TIMEZONE)
+
 
 
 async def display_embed(data, id=None, title=None, type=None, del_after=None, color=discord.Color.brand_green()):

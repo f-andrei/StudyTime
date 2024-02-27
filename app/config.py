@@ -13,10 +13,11 @@ ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_DIR = 'database'
 DB_NAME = 'studytime.sqlite3'
 DB_FILE = os.path.join(ROOT_DIR, DB_DIR, DB_NAME)
+TIMEZONE = 'America/Sao_Paulo'
 DISCORD_ID = discord.Object(id=os.getenv('DISCORD_ID'))
 DELETE_AFTER = 60
 intents = discord.Intents.all()
 intents.message_content = True
-bot = commands.Bot(command_prefix='.', intents=intents)
+bot = commands.Bot(command_prefix='.', intents=intents, help_command=None)
 
 model = ChatOpenAI(model="gpt-4-turbo-preview", api_key=OPENAI_API_KEY)

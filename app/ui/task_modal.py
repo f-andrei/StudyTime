@@ -5,10 +5,11 @@ from utils.dt_manager import DateTimeManager
 from buttons import DaysToRepeatView
 from tasks.tasks import Task
 from database.task_operations import delete_task_from_database, get_last_task, get_task_by_id, save_repeat_days_to_database
-from config import DELETE_AFTER
+from config import DELETE_AFTER, TIMEZONE
 from utils.embed_utils import display_embed
 
-dt_manager = DateTimeManager('America/Sao_Paulo')
+dt_manager = DateTimeManager(TIMEZONE)
+
 five_from_dt_now = dt_manager.calculate_datetime(dt_manager.get_current_time(), 5)
 five_from_dt_now = dt_manager.format_datetime(five_from_dt_now)
 

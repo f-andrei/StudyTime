@@ -1,9 +1,9 @@
 from utils.dt_manager import DateTimeManager
 from database.notes_operations import get_note_by_id, save_note_to_database, update_note_in_database
-import json
+from config import TIMEZONE
 from typing import Optional
 
-dt_manager = DateTimeManager('America/Sao_Paulo')
+dt_manager = DateTimeManager(TIMEZONE)
 notes_path = 'database/notes.json'
 
 

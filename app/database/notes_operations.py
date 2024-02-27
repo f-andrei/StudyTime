@@ -1,17 +1,14 @@
 import sqlite3
 from pathlib import Path
 from utils.dt_manager import DateTimeManager
+from config import TIMEZONE, DB_FILE
 
-ROOT_DIR = Path(__file__).parent.parent
-DB_DIR = 'database'
-DB_NAME = 'studytime.sqlite3'
-DB_FILE = ROOT_DIR / DB_DIR / DB_NAME
 TASK_TABLE = 'tasks'
 REPEAT_DAYS_TABLE = 'repeat_days'
 NOTES_TABLE = 'notes'
 USER_TABLE = 'user'
 
-dt_manager = DateTimeManager('America/Sao_Paulo')
+dt_manager = DateTimeManager(TIMEZONE)
 
 # Create a connection to the SQLite database
 def establish_connection():

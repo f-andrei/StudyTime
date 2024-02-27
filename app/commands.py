@@ -45,7 +45,7 @@ async def all_tasks(ctx: commands.Context) -> None:
 			embed.add_field(name=f"Create one using:", value=f"```/create_task```", inline=False)
 			await ctx.send(embed=embed)
 			return
-		await ctx.send("Here's your tasks: ")
+		await ctx.send("Here's your tasks: ", delete_after=DELETE_AFTER)
 		for task in tasks:
 			await display_embed(task, title="Task", color=discord.Color.from_rgb(68, 0, 229), type='task')
 			view = EditTask(task)
@@ -72,7 +72,7 @@ async def all_notes(ctx):
 		channel = bot.get_channel(CHANNEL_ID)
 		all_notes = get_notes_by_user_id(user_id)
 		if all_notes:
-			await ctx.send("Here are your notes")
+			await ctx.send("Here are your notes", delete_after=DELETE_AFTER)
 
 			for note in all_notes:
 				await display_embed(note, title="Note", color=discord.Color.from_rgb(68, 0, 229), type='note')

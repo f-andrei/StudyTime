@@ -1,13 +1,12 @@
+import os 
 import sqlite3
 
-
-DATABASE_PATH = "app\database\studytime.sqlite3"
+DATABASE_PATH = "/home/ubuntu/StudyTime/app/database/studytime.sqlite3"
 
 
 def analyze_all_tables():
     with sqlite3.connect(DATABASE_PATH) as conn:
         cur = conn.cursor()
-
         # Query the list of all tables in the database
         cur.execute("SELECT name FROM sqlite_master WHERE type='table';")
         tables = cur.fetchall()
@@ -63,3 +62,5 @@ def get_table_info(table_name):
     table_info_str = f"Table: {table_name}\n"
     table_info_str += "\n".join(table_info)
     return table_info_str
+
+

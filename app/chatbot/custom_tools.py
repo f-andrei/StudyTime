@@ -10,7 +10,7 @@ import discord
 import asyncio
 
 
-DATABASE_PATH = "app\database\studytime.sqlite3"
+DATABASE_PATH = "/home/ubuntu/StudyTime/app/database/studytime.sqlite3"
 
 memory = ConversationBufferMemory(memory_key="chat_history")
 

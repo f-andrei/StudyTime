@@ -1,5 +1,5 @@
 import discord
-from config import bot, CHANNEL_ID, DISCORD_ID, DELETE_AFTER
+from config import bot, CHANNEL_ID, DISCORD_ID, DELETE_AFTER, TIMEZONE
 from utils.embed_utils import  display_embed
 from database.task_operations import get_tasks_by_user_id
 from discord.ext import commands
@@ -13,7 +13,7 @@ from ui.note_modal import EditNote, NoteModal
 
 
 
-TIMEZONE = 'America/Sao_Paulo'
+
 dt_manager = DateTimeManager(TIMEZONE)
 
 
@@ -25,11 +25,34 @@ async def greet(ctx):
 		print(f"Error at greet {e}")
 
 
+@bot.hybrid_command(name="help", description="Lists all commands")
+@app_commands.guilds(DISCORD_ID)
+async def help(ctx: commands.Context) -> None:
+	embed = discord.Embed(
+		title="StudyTime", 
+		color=discord.Color.dark_purple(), 
+		description="""**Welcome to *StudyTime*!  
+		I'm here to assist you in managing your tasks and notes. 
+		You can also have a chat with ChatGPT-4 for free!	
+		These are the commands available:**""",
+		url="https://github.com/f-andrei/StudyTime")
+	embed.add_field(name="**Create a task**", value="```/create_task```", inline=False)
+	embed.add_field(name="**Create a note**", value="```/create_note```", inline=False)
+	embed.add_field(name="**List, update or delete tasks**", value="```/tasks```", inline=False)
+	embed.add_field(name="**List, update or delete notes****", value="```/notes```", inline=False)
+	embed.add_field(name="**Have a chat with GPT**", value="```/chat```", inline=False)
+	embed.set_image(url="https://i.ibb.co/P9r1r6K/Study.png")
+	embed.set_thumbnail(url="https://i.ibb.co/rvZh9FC/studytime.png")
+	embed.set_footer(text="By @andrei.f on Discord.", icon_url="https://i.ibb.co/nLsLSjH/gorilla.png")
+	await ctx.send(embed=embed)
+
+
 @bot.tree.command(name="create_task", description="Create a task")
 @app_commands.guilds(DISCORD_ID)
 async def create_task(interaction: discord.Interaction):
     """creates a task"""
     await interaction.response.send_modal(TaskModal(action="create"))
+
 
 @bot.hybrid_command(name="tasks", description="List, update or delete tasks.")
 @app_commands.guilds(DISCORD_ID)

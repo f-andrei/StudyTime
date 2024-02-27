@@ -154,9 +154,5 @@ async def sync(ctx):
 	print("synced")
 
 
-@bot.command()
-async def test(ctx):
-	await ctx.send(f"channel{CHANNEL_ID}, dc{DISCORD_ID}")
-
 
 

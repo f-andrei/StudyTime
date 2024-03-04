@@ -16,7 +16,7 @@ class DateTimeManager:
         return datetime_now
 
     def get_day_number(self, datetime_str):
-        dt_obj = datetime.strptime(datetime_str, "%d/%m/%Y")
+        dt_obj = datetime.strptime(datetime_str, "%Y-%m-%d")
         day_number = dt_obj.weekday()
         return (day_number + 1) % 7
 

@@ -10,7 +10,7 @@ from chatbot.chat_llm import invoke_chat
 from database.notes_operations import get_notes_by_user_id
 from ui.task_modal import  EditTask, TaskModal
 from ui.note_modal import EditNote, NoteModal
-
+from tasks.tasks import Tasks
 
 
 
@@ -62,7 +62,8 @@ async def all_tasks(ctx: commands.Context) -> None:
 		user_id = ctx.author.id
 		# Checks if exist tasks
 		channel = bot.get_channel(CHANNEL_ID)
-		tasks = get_tasks_by_user_id(user_id)
+		tasks = Tasks()
+		tasks = tasks.get_all_tasks(user_id=user_id)
 		if not tasks:
 			embed = discord.Embed(colour=discord.Color.red(), title="You don't have any tasks yet!")
 			embed.add_field(name=f"Create one using:", value=f"```/create_task```", inline=False)
@@ -70,7 +71,7 @@ async def all_tasks(ctx: commands.Context) -> None:
 			return
 		await ctx.send("Here's your tasks: ", delete_after=DELETE_AFTER)
 		for task in tasks:
-			await display_embed(task, title="Task", color=discord.Color.from_rgb(68, 0, 229), type='task')
+			await display_embed(task, title="Task", task_id=task["id"], color=discord.Color.from_rgb(68, 0, 229), type='task')
 			view = EditTask(task)
 			msg: discord.Message = await channel.send(view=view, delete_after=DELETE_AFTER)
 			view.msg_id = msg.id

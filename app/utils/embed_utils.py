@@ -1,40 +1,35 @@
 from utils.dt_manager import DateTimeManager
 import discord
 from config import CHANNEL_ID, bot, DELETE_AFTER
-from database.task_operations import get_due_tasks_days
+from tasks.tasks import Tasks
 from config import TIMEZONE
 
 dt_manager = DateTimeManager(TIMEZONE)
 
 
 
-async def display_embed(data, id=None, title=None, type=None, del_after=None, color=discord.Color.brand_green()):
+async def display_embed(data: dict, task_id=None, title=None, type=None, del_after=None, color=discord.Color.brand_green()):
     channel = bot.get_channel(CHANNEL_ID)
-    name = ""
-    description = ""
-    links = ""
-    start_date = ""
-    duration = ""
-    is_repeatable = ""
     repeat_days = []
     repeat_days_list = []
     if type == 'task':
-        match len(data):
-            case 9:
-                id, name, description, links, start_date, time, duration, user_id, repeat_days = data
-            case 8:
-                id, name, description, links, start_date, time, duration, user_id = data
-            case 6:
-                name, description, links, start_date, time, duration = data
-            case 5:
-                name, description, links, start_date, duration = data
+        fields = {
+            "Name": data["name"], 
+            "Description": data["description"], 
+            "Links": data["links"], 
+            "Start date": data["start_date"], 
+            "Time": data["time"], 
+            "Duration": data["duration"], 
+        }
+
+        
 
     if type == 'note':
         match len(data):
             case 6:
-                id, name, description, links, created_at, user_id = data
+                task_id, name, description, links, created_at, user_id = data
             case 5:
-                id, name, description, links, created_at = data
+                task_id, name, description, links, created_at = data
             case 4:
                 name, description, links, created_at = data
             case 3:
@@ -50,12 +45,14 @@ async def display_embed(data, id=None, title=None, type=None, del_after=None, co
         4: "Friday",
         5: "Saturday"
     }
-
-    repeat_days = get_due_tasks_days(id)
+    tasks = Tasks()
+    repeat_days = tasks.get_repeat_days(task_id)
     if repeat_days:
         try:
-            for _, _, day in repeat_days:
+            for i in range(len(repeat_days)):
+                day = repeat_days[i]["day_number"]
                 repeat_days_list.append(number_to_day[day])
+
             is_repeatable = repeat_days_list
             if len(is_repeatable) > 1:
                 is_repeatable = ', '.join(is_repeatable)
@@ -63,18 +60,12 @@ async def display_embed(data, id=None, title=None, type=None, del_after=None, co
                 is_repeatable = is_repeatable[0]
         except Exception as e:
             print(f"Error at display_embeds: {e}")
+            raise e
     else:
         is_repeatable = 'Not repeatable'
-    if type == 'task':
-        fields = {
-            "Name": name, 
-            "Description": description, 
-            "Links": links, 
-            "Start date": start_date,
-            "Time": time,
-            "Duration": duration,
-            "Repeat days": is_repeatable
-            }
+
+    fields["Repeat days"] = is_repeatable
+
         
     if type == 'note':
         fields = {"Name": name, "Description": description, "Links": links}

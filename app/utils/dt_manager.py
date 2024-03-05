@@ -6,7 +6,8 @@ from typing import Optional, Tuple
 class DateTimeManager:
     def __init__(self, tz: Optional[str] = None):
         self.tz = tz
-        self.datetime_format = "%d/%m/%Y %H:%M:%S"
+        self.datetime_format = "%Y-%m-%d %H:%M:%S"
+        # self.datetime_format = "%d/%m/%Y %H:%M:%S"
  
     def get_current_time(self) -> datetime:
         datetime_now = datetime.utcnow()

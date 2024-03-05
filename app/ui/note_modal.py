@@ -1,10 +1,12 @@
 from discord import ui
 import discord
-from notes.notes import Note
-from database.notes_operations import get_note_by_id, delete_note_from_database
+from notes.notes import Notes
 from config import DELETE_AFTER
 from utils.embed_utils import display_embed
+from utils.dt_manager import DateTimeManager
 
+notes = Notes()
+dt_manager = DateTimeManager("America/Sao_Paulo")
 
 class NoteModal(ui.Modal, title='Create note'):
     def __init__(self, action: str, note_id: int = None):
@@ -24,15 +26,17 @@ class NoteModal(ui.Modal, title='Create note'):
     async def on_submit(self, interaction: discord.Interaction):
         embed = discord.Embed(title=self.title, color = discord.Color.blue())
         embed.set_author(name=interaction.user, icon_url=interaction.user.avatar)
-        note = Note()
+        
         user_id = interaction.user.id
         
-        note_data = [str(self.name), str(self.description), str(self.links)]
+        note_data = {
+            "name": str(self.name),
+            "description": str(self.description),
+            "links": str(self.links),
+            "created_at": dt_manager.get_formatted_datetime_now(),
+            "user_id": str(user_id)
+        }
         
-        for i, item in enumerate(note_data):
-            if not len(item) >= 1:
-                note_data[i] = None
-
         if self.action == 'create':
             embed_2 = discord.Embed(title=None, color=discord.Color.red())
             for i, item in enumerate(note_data):
@@ -41,7 +45,7 @@ class NoteModal(ui.Modal, title='Create note'):
                     await interaction.response.send_message(embed=embed_2, delete_after=DELETE_AFTER)
                     return
 
-            note_created = note.create_note(*note_data, user_id)
+            note_created = notes.create_note(note_data)
             if not note_created:
                 embed_2.title = "Unable to create note. Missing fields or invalid data format."
                 await interaction.response.send_message(embed=embed_2, delete_after=DELETE_AFTER)
@@ -51,7 +55,17 @@ class NoteModal(ui.Modal, title='Create note'):
             await interaction.response.defer()
 
         if self.action == 'update':
-            note_updated = note.update_note(self.note_id, *note_data)
+            note_data = {}
+            field_names = ["name", "description", "links"]
+            fields_values = [self.name, self.description, self.links]
+
+            for field_name, field_value in zip(field_names, fields_values):
+                field_value = str(field_value)
+                if field_value is not None and field_value.strip() != "":
+                    note_data[field_name] = field_value
+
+            note_updated = notes.update_note(note_data=note_data, note_id=self.note_id)
+
             if not note_updated:
                 embed.title = "Unable to update note. Invalid data format."
                 embed.description = None
@@ -69,9 +83,9 @@ class EditNote(discord.ui.View):
     msg_id = None
     def __init__(self, note_data) -> None:	
         super().__init__()
-        self.note_data = note_data
-        self.note_id = note_data[0]
-        self.note = get_note_by_id(self.note_id)
+        self.note_data: dict = note_data
+        self.note_id: int = note_data["id"]
+        self.note = notes.get_note(self.note_id)
         self.embed = discord.Embed()
 
     @discord.ui.button(label="Edit", style=BLURPLE_STYLE)
@@ -89,7 +103,7 @@ class EditNote(discord.ui.View):
     async def delete(self, interaction: discord.Interaction, button: discord.ui.Button):
         
         if self.note:
-            deleted = delete_note_from_database(self.note_id)
+            deleted = notes.delete_note(self.note_id)
             if deleted:
                 self.embed.title = "Note sucessfully deleted!"
                 self.embed.color = discord.Color.red()

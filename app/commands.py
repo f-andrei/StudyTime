@@ -1,13 +1,12 @@
 import discord
+from notes.notes import Notes
 from config import bot, CHANNEL_ID, DISCORD_ID, DELETE_AFTER, TIMEZONE
 from utils.embed_utils import  display_embed
-from database.task_operations import get_tasks_by_user_id
 from discord.ext import commands
 from discord import app_commands
 from time import sleep
 from utils.dt_manager import DateTimeManager
 from chatbot.chat_llm import invoke_chat
-from database.notes_operations import get_notes_by_user_id
 from ui.task_modal import  EditTask, TaskModal
 from ui.note_modal import EditNote, NoteModal
 from tasks.tasks import Tasks
@@ -94,12 +93,13 @@ async def all_notes(ctx):
 	try:
 		user_id = ctx.author.id
 		channel = bot.get_channel(CHANNEL_ID)
-		all_notes = get_notes_by_user_id(user_id)
+		notes = Notes()
+		all_notes = note.get_all_notes(user_id)
 		if all_notes:
 			await ctx.send("Here are your notes", delete_after=DELETE_AFTER)
 
 			for note in all_notes:
-				await display_embed(note, title="Note", color=discord.Color.from_rgb(68, 0, 229), type='note')
+				await display_embed(note, title="Note", task_id=note["id"], color=discord.Color.from_rgb(68, 0, 229), type='note')
 				view = EditNote(note)
 				msg: discord.Message = await channel.send(view=view, delete_after=DELETE_AFTER)
 				view.msg_id = msg.id

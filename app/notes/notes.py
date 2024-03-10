@@ -12,6 +12,7 @@ class Notes:
     NOTE_GET_ALL_ROUTE = "note/get_all_notes"
     NOTE_UPDATE_ROUTE = "note/update_note"
     NOTE_DELETE_ROUTE = "note/delete_note"
+    
     api_url = "http://127.0.0.1:8000" 
 
 

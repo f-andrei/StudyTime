@@ -12,7 +12,6 @@ from ui.note_modal import EditNote, NoteModal
 from tasks.tasks import Tasks
 
 
-
 dt_manager = DateTimeManager(TIMEZONE)
 
 

@@ -8,7 +8,7 @@ dt_manager = DateTimeManager(TIMEZONE)
 
 
 
-async def display_embed(data: dict, task_id=None, title=None, type=None, del_after=None, color=discord.Color.brand_green()):
+async def display_embed(data: dict, task_id=None, title=None, type=None, del_after=None, user_id=None, color=discord.Color.brand_green()):
     channel = bot.get_channel(CHANNEL_ID)
     repeat_days = []
     repeat_days_list = []
@@ -61,6 +61,7 @@ async def display_embed(data: dict, task_id=None, title=None, type=None, del_aft
            "Links": data["links"],
            "Created at": data["created_at"],
        }
+
     embed = discord.Embed(colour=color, title=title)
     for field, value in fields.items():
         if not value:
@@ -70,5 +71,9 @@ async def display_embed(data: dict, task_id=None, title=None, type=None, del_aft
         delete_time = del_after
     else:
         delete_time = DELETE_AFTER
+    
+    if user_id:
+        mention = f"Hey <@{user_id}>"
+        await channel.send(mention, delete_after=delete_time)
     await channel.send(embed=embed, delete_after=delete_time)
     return

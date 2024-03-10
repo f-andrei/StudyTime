@@ -26,19 +26,19 @@ class TaskScheduler:
     async def update_schedule(self) -> None:
         while self.running:
             self.due_task_ids.clear()
-            due_tasks = self.task.get_due_tasks('227128911576694784')
+            due_tasks = self.task.get_due_tasks()
             tasks_dict = {}
-            
-            for task in due_tasks:
-                task_id = task["id"]
-                task_days = await asyncio.to_thread(self.task.get_repeat_days, task_id)
-                tasks_dict.setdefault(task_id, {'days': []})
-                tasks_dict[task_id]['days'].extend(day["day_number"] for day in task_days)
+            if due_tasks:
+                for task in due_tasks:
+                    task_id = task["id"]
+                    task_days = await asyncio.to_thread(self.task.get_repeat_days, task_id)
+                    tasks_dict.setdefault(task_id, {'days': []})
+                    tasks_dict[task_id]['days'].extend(day["day_number"] for day in task_days)
 
-            for task_id, data in tasks_dict.items():
-                await self.schedule_job(task_id, data['days'])
+                for task_id, data in tasks_dict.items():
+                    await self.schedule_job(task_id, data['days'])
 
-            await asyncio.sleep(self.SLEEP_DURATION)
+                await asyncio.sleep(self.SLEEP_DURATION)
             self.running = False
 
     async def main(self) -> None:

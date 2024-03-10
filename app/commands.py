@@ -93,7 +93,7 @@ async def all_notes(ctx):
 		user_id = ctx.author.id
 		channel = bot.get_channel(CHANNEL_ID)
 		notes = Notes()
-		all_notes = note.get_all_notes(user_id)
+		all_notes = notes.get_all_notes(user_id)
 		if all_notes:
 			await ctx.send("Here are your notes", delete_after=DELETE_AFTER)
 

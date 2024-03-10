@@ -1,4 +1,5 @@
 import requests
+from app.config import DATABASE_API_URL
 
 class Tasks:
     TASK_CREATE_ENDPOINT = "task/create_task"
@@ -9,7 +10,7 @@ class Tasks:
     REPEAT_DAYS_ADD_ENDPOINT = "task/add_repeat_days"
     REPEAT_DAYS_GET_ENDPOINT = "task/get_repeat_days"
     
-    api_url = "http://127.0.0.1:8000"
+    api_url = DATABASE_API_URL
 
     def create_task(self, task_data: dict):
         url = "{}/{}".format(self.api_url, self.TASK_CREATE_ENDPOINT)

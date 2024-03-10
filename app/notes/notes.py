@@ -1,5 +1,6 @@
 import requests
 from datetime import datetime
+from app.config import DATABASE_API_URL
 
 def get_datetime_str():
     dt_now = datetime.now()
@@ -12,7 +13,8 @@ class Notes:
     NOTE_GET_ALL_ROUTE = "note/get_all_notes"
     NOTE_UPDATE_ROUTE = "note/update_note"
     NOTE_DELETE_ROUTE = "note/delete_note"
-    api_url = "http://127.0.0.1:8000" 
+    
+    api_url = DATABASE_API_URL
 
 
     def create_note(self, note_data: dict):

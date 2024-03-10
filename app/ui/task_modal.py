@@ -17,19 +17,24 @@ class TaskModal(ui.Modal, title="Create task"):
 		super().__init__()
 		self.action = action
 		self.task_id = task_id
+
 	name = ui.TextInput(label='Name', placeholder="Study",
 								style=discord.TextStyle.short,
 								max_length=50, required=False)
+	
 	description = ui.TextInput(label='Description', placeholder="Study Tensor Flow",
 										style=discord.TextStyle.paragraph,
 										max_length=1000, required=False)
+	
 	links = ui.TextInput(label='Links', placeholder="https://www.discord.com",
 								style=discord.TextStyle.short,
 								required=False)
+	
 	start_date = ui.TextInput(label='Start Date',
 									style=discord.TextStyle.short,
 									min_length=19, max_length=19,
 									placeholder=five_from_dt_now, required=False)
+	
 	duration = ui.TextInput(label='Duration (minutes)',
 									style=discord.TextStyle.short,
 									min_length=1, max_length=3,
@@ -38,7 +43,9 @@ class TaskModal(ui.Modal, title="Create task"):
 	async def on_submit(self, interaction: discord.Interaction):
 			embed = discord.Embed(title=self.title, color = discord.Color.blue())
 			embed.set_author(name=interaction.user, icon_url=interaction.user.avatar)
+
 			user_id = interaction.user.id
+
 			if self.action == "create":
 				self.start_date = str(self.start_date)
 				self.start_date = self.start_date.split(" ")
@@ -54,19 +61,19 @@ class TaskModal(ui.Modal, title="Create task"):
 					"user_id": str(user_id)
 				}
 
-			if self.action == 'create':
 				embed_2 = discord.Embed(title="Would you like to make this task repeat on multiple days?", color=discord.Color.blue())
 				for i, item in enumerate(task_data):
 					if item is None:
-						embed_2.title="Unable to create task. Missing fields or invalid data format."
+						embed_2.title="Unable to create task. Missing fields or invalid data."
 						await interaction.response.send_message(embed=embed_2, delete_after=DELETE_AFTER)
 						return
 			
 				task_created = task.create_task(task_data=task_data)
 				if not task_created:
-					embed_2.title = "Unable to create task. Missing fields or invalid data format."
+					embed_2.title = "Unable to create task. Missing fields or invalid data."
 					await interaction.response.send_message(embed=embed_2, delete_after=DELETE_AFTER)
 					return
+				
 				self.task_id = task_created["id"]
 				button_view=IsRepeatable(embed_2, task_data, self.task_id, self.start_date)
 				await interaction.response.defer(thinking=True)
@@ -134,6 +141,7 @@ class IsRepeatable(discord.ui.View):
 		await display_embed(self.task_data, last_task_id, title="Task created sucessfully!", del_after=86400, type='task')
 		await interaction.response.edit_message(view=self.clear_items())
 		await interaction.followup.delete_message(self.msg_id)
+
 
 class EditTask(discord.ui.View):
 	BLURPLE_STYLE = discord.ButtonStyle.blurple

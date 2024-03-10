@@ -1,14 +1,19 @@
 import asyncio
-from database.task_operations import get_due_tasks, get_due_tasks_days
+from tasks.tasks import Tasks
 from typing import List
 
+
+task = Tasks()
+
+
 class TaskScheduler:
-    SLEEP_DURATION: float = 0.5
+    SLEEP_DURATION: float = 15
 
     def __init__(self) -> None:
         self.due_task_ids: set[int] = set()
         self.due_task_ids_lock: asyncio.Lock = asyncio.Lock()
         self.running: bool = True
+        self.task = Tasks()
 
     async def job(self, day: int, task_id: int) -> None:
         async with self.due_task_ids_lock:
@@ -21,14 +26,14 @@ class TaskScheduler:
     async def update_schedule(self) -> None:
         while self.running:
             self.due_task_ids.clear()
-            due_tasks = get_due_tasks()
+            due_tasks = self.task.get_due_tasks('227128911576694784')
             tasks_dict = {}
             
             for task in due_tasks:
-                task_id, _, _, _, _, _, _, _ = task
-                task_days = await asyncio.to_thread(get_due_tasks_days, task_id)
+                task_id = task["id"]
+                task_days = await asyncio.to_thread(self.task.get_repeat_days, task_id)
                 tasks_dict.setdefault(task_id, {'days': []})
-                tasks_dict[task_id]['days'].extend(day[1] for day in task_days)
+                tasks_dict[task_id]['days'].extend(day["day_number"] for day in task_days)
 
             for task_id, data in tasks_dict.items():
                 await self.schedule_job(task_id, data['days'])

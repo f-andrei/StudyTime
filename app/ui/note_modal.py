@@ -13,12 +13,15 @@ class NoteModal(ui.Modal, title='Create note'):
         super().__init__()
         self.action = action
         self.note_id = note_id
+
     name = ui.TextInput(label='Name', placeholder="Replace batteries",
                         style=discord.TextStyle.short, 
                         max_length=50, required=False)
+    
     description = ui.TextInput(label='Description', placeholder='Replace my mouse battery',
                         style=discord.TextStyle.paragraph, 
                         max_length=1000, required=False)
+    
     links = ui.TextInput(label='Links', placeholder="https://google.com",
                         style=discord.TextStyle.short, 
                         required=False)
@@ -47,7 +50,7 @@ class NoteModal(ui.Modal, title='Create note'):
 
             note_created = notes.create_note(note_data)
             if not note_created:
-                embed_2.title = "Unable to create note. Missing fields or invalid data format."
+                embed_2.title = "Unable to create note. Missing fields or invalid data."
                 await interaction.response.send_message(embed=embed_2, delete_after=DELETE_AFTER)
                 return
             
@@ -67,7 +70,7 @@ class NoteModal(ui.Modal, title='Create note'):
             note_updated = notes.update_note(note_data=note_data, note_id=self.note_id)
 
             if not note_updated:
-                embed.title = "Unable to update note. Invalid data format."
+                embed.title = "Unable to update note. Invalid data."
                 embed.description = None
                 await interaction.response.send_message(embed=embed, delete_after=DELETE_AFTER)
             else:
@@ -81,6 +84,7 @@ class EditNote(discord.ui.View):
     RED_STYLE = discord.ButtonStyle.red
     SUCCESS_STYLE = discord.ButtonStyle.success
     msg_id = None
+
     def __init__(self, note_data) -> None:	
         super().__init__()
         self.note_data: dict = note_data
@@ -101,7 +105,6 @@ class EditNote(discord.ui.View):
             
     @discord.ui.button(label="Delete", style=RED_STYLE)
     async def delete(self, interaction: discord.Interaction, button: discord.ui.Button):
-        
         if self.note:
             deleted = notes.delete_note(self.note_id)
             if deleted:
@@ -112,6 +115,7 @@ class EditNote(discord.ui.View):
         else:
             self.embed.title = f"Note doesn't exist or is already deleted."
             self.embed.color = discord.Color.red()
+            
         button.disabled = True
         await interaction.response.send_message(embed=self.embed)
         await interaction.followup.delete_message(self.msg_id)

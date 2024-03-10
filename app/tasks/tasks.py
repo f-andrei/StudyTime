@@ -48,7 +48,7 @@ class Tasks:
         response = requests.get(url)
         return response.json()
 
-    def get_due_tasks(self, user_id: int):
+    def get_due_tasks(self, user_id: str):
         url = "{}/{}/{}".format(self.api_url, self.TASK_GET_DUE_TASKS_ENDPOINT, user_id)
         response = requests.get(url)
         return response.json()

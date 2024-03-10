@@ -1,12 +1,10 @@
-from config import bot, CHANNEL_ID
 import discord
 from discord.ext import tasks, commands
 from tasks.reminder import TaskScheduler
-from database.task_operations import get_task_by_id
 import asyncio
 from typing import List
 from utils.embed_utils import display_embed
-
+from tasks.tasks import Tasks
 
 class Events(commands.Cog):
 	REMIND_LOOP_INTERVAL = 5
@@ -16,6 +14,7 @@ class Events(commands.Cog):
 	def __init__(self, bot: commands.Bot) -> None:
 		self.bot = bot
 		self.task_scheduler = TaskScheduler()
+		self.task = Tasks()
 	
 	async def on_ready(self) -> None:
 		"""Starts status loop and task reminder when ready."""
@@ -60,10 +59,10 @@ class Events(commands.Cog):
 			if due_task_ids:
 				for task_id in due_task_ids:
 					try:
-						task_data = await asyncio.to_thread(get_task_by_id, task_id)
-						task_data = task_data[0]
+						task_data = await asyncio.to_thread(self.task.get_task, task_id)
+
 						notify_tasks.append(task_data)
-						durations.append(task_data[6])
+						durations.append(task_data["duration"])
 					except IndexError:
 						# Since this program is supposed to run continuously, the user may
 						# decide to delete a task, in this case to avoid crashes, said

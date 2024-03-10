@@ -31,6 +31,8 @@ async def display_embed(data: dict, task_id=None, title=None, type=None, del_aft
             5: "Saturday"
         }
         tasks = Tasks()
+        if not task_id:
+            task_id = data["id"]
         repeat_days = tasks.get_repeat_days(task_id)
         if repeat_days:
             try:

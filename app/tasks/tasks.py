@@ -1,5 +1,6 @@
 import requests
 
+
 class Tasks:
     TASK_CREATE_ENDPOINT = "task/create_task"
     TASK_GET_ENDPOINT = "task/get_task"
@@ -8,6 +9,7 @@ class Tasks:
     TASK_DELETE_ENDPOINT = "task/delete_task"
     REPEAT_DAYS_ADD_ENDPOINT = "task/add_repeat_days"
     REPEAT_DAYS_GET_ENDPOINT = "task/get_repeat_days"
+    TASK_GET_DUE_TASKS_ENDPOINT = "task/get_due_tasks"
     
     api_url = "http://127.0.0.1:8000"
 
@@ -36,12 +38,17 @@ class Tasks:
         response = requests.delete(url)
         return response.json()
     
-    def add_repeat_days(self, task_id: int, repeat_days: dict):
+    def add_repeat_days(self, repeat_days: dict, task_id: int):
         url = "{}/{}/{}".format(self.api_url, self.REPEAT_DAYS_ADD_ENDPOINT, task_id)
         response = requests.post(url, json=repeat_days)
         return response.json()
     
     def get_repeat_days(self, task_id: int):
         url = "{}/{}/{}".format(self.api_url, self.REPEAT_DAYS_GET_ENDPOINT, task_id)
+        response = requests.get(url)
+        return response.json()
+
+    def get_due_tasks(self, user_id: str):
+        url = "{}/{}/{}".format(self.api_url, self.TASK_GET_DUE_TASKS_ENDPOINT, user_id)
         response = requests.get(url)
         return response.json()

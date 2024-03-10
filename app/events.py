@@ -32,16 +32,16 @@ class Events(commands.Cog):
 				self.remind_tasks.start()
 
 
-	async def notify_tasks(self, tasks: List[str], durations: List[float]) -> None:
+	async def notify_tasks(self, task: dict, duration: List[float]) -> None:
 		"""Task notifier (sends a message with an embed)"""
 		try:
-			if tasks:
+			if task:
 				print('NOTIFY')
-				duration = durations[0] * 60
-				await display_embed(tasks, title="Task is due!", del_after=duration, color=discord.Color.dark_orange(), type='task')
+				duration = duration[0] * 60
+				await display_embed(task, title="Task is due!", user_id=task["user_id"], del_after=duration, color=discord.Color.dark_orange(), type='task')
 				await asyncio.sleep(duration)
 				title="Task ended."
-				await display_embed(tasks, title=title, color=discord.Color.pink(), del_after=86400, type='task')
+				await display_embed(task, title=title, user_id=task["user_id"], color=discord.Color.pink(), del_after=86400, type='task')
 
 			self.task_scheduler.toggle_scheduler(True)
 		except IndexError as e:
@@ -55,14 +55,14 @@ class Events(commands.Cog):
 			await self.task_scheduler.update_schedule()
 			due_task_ids = await self.task_scheduler.get_due_task_ids()
 			notify_tasks = []
-			durations = []
+			duration = []
 			if due_task_ids:
 				for task_id in due_task_ids:
 					try:
 						task_data = await asyncio.to_thread(self.task.get_task, task_id)
 
 						notify_tasks.append(task_data)
-						durations.append(task_data["duration"])
+						duration.append(task_data["duration"])
 					except IndexError:
 						# Since this program is supposed to run continuously, the user may
 						# decide to delete a task, in this case to avoid crashes, said
@@ -73,7 +73,7 @@ class Events(commands.Cog):
 						if not due_task_ids:
 							break
 			if notify_tasks:
-				await self.notify_tasks(notify_tasks[0], durations)
+				await self.notify_tasks(task=notify_tasks[0], duration=duration)
 		except IndexError as e:
 			print(f"Error in remind_tasks(): {e}")
 	@tasks.loop(seconds=STATUS_LOOP_INTERVAL)

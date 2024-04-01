@@ -1,16 +1,13 @@
 import discord
 from discord.ext import tasks, commands
 from tasks.reminder import TaskScheduler
+from config import REMIND_LOOP_INTERVAL, STATUS_LOOP_INTERVAL, TASK_POSTPONE_INTERVAL
 import asyncio
 from typing import List
 from utils.embed_utils import display_embed
 from tasks.tasks import Tasks
 
 class Events(commands.Cog):
-	REMIND_LOOP_INTERVAL = 5
-	STATUS_LOOP_INTERVAL = 10
-	TASK_POSTPONE_INTERVAL = 295
-
 	def __init__(self, bot: commands.Bot) -> None:
 		self.bot = bot
 		self.task_scheduler = TaskScheduler()
@@ -38,10 +35,26 @@ class Events(commands.Cog):
 			if task:
 				print('NOTIFY')
 				duration = duration[0] * 60
-				await display_embed(task, title="Task is due!", user_id=task["user_id"], del_after=duration, color=discord.Color.dark_orange(), type='task')
+				await display_embed(
+					task, 
+					title="Task is due!", 
+					user_id=task["user_id"], 
+					del_after=duration, 
+					color=discord.Color.dark_orange(), 
+					type='task'
+					)
 				await asyncio.sleep(duration)
+
 				title="Task ended."
-				await display_embed(task, title=title, user_id=task["user_id"], color=discord.Color.pink(), del_after=86400, type='task')
+				
+				await display_embed(
+					task, 
+					title=title, 
+					user_id=task["user_id"], 
+					color=discord.Color.pink(), 
+					del_after=86400, 
+					type='task'
+					)
 
 			self.task_scheduler.toggle_scheduler(True)
 		except IndexError as e:

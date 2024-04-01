@@ -20,9 +20,14 @@ DB_FILE = os.path.join(ROOT_DIR, DB_DIR, DB_NAME)
 TIMEZONE = 'America/Sao_Paulo'
 
 DELETE_AFTER = 60
+MESSAGE_DELAY = 0.5
+REMIND_LOOP_INTERVAL = 5
+STATUS_LOOP_INTERVAL = 10
+TASK_POSTPONE_INTERVAL = 295
 
 intents = discord.Intents.all()
 intents.message_content = True
 bot = commands.Bot(command_prefix='.', intents=intents, help_command=None)
 
 model = ChatOpenAI(model="gpt-4-turbo-preview", api_key=OPENAI_API_KEY)
+channel = bot.get_channel(CHANNEL_ID)

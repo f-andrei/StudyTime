@@ -6,7 +6,6 @@ from config import TIMEZONE
 from typing import Dict, Any
 
 dt_manager = DateTimeManager(TIMEZONE)
-channel = bot.get_channel(CHANNEL_ID)
 
 async def display_embed(
         data: Dict[str, Any], 
@@ -81,6 +80,7 @@ async def display_embed(
     else:
         delete_time = DELETE_AFTER
     
+    channel = bot.get_channel(CHANNEL_ID)
     if user_id:
         mention = f"Hey <@{user_id}>"
         await channel.send(mention, delete_after=delete_time)

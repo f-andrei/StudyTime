@@ -1,6 +1,6 @@
 import discord
 from notes.notes import Notes
-from config import bot, channel, DISCORD_ID, DELETE_AFTER, TIMEZONE, MESSAGE_DELAY
+from config import bot, DISCORD_ID, DELETE_AFTER, TIMEZONE, MESSAGE_DELAY, CHANNEL_ID
 from utils.embed_utils import  display_embed
 from discord.ext import commands
 from discord import app_commands
@@ -13,7 +13,7 @@ from tasks.tasks import Tasks
 
 
 dt_manager = DateTimeManager(TIMEZONE)
-
+channel = bot.get_channel(CHANNEL_ID)
 
 @bot.command(aliases=['bot', 'studybot', 'study'])
 async def greet(ctx) -> None:

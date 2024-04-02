@@ -49,4 +49,3 @@ intents.message_content = True
 bot = commands.Bot(command_prefix='.', intents=intents, help_command=None)
 
 model = ChatOpenAI(model="gpt-4-turbo-preview", api_key=OPENAI_API_KEY)
-channel = bot.get_channel(CHANNEL_ID)

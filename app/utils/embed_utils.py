@@ -1,12 +1,12 @@
 from utils.dt_manager import DateTimeManager
 import discord
-from config import DELETE_AFTER
+from config import DELETE_AFTER, CHANNEL_ID, bot
 from tasks.tasks import Tasks
-from config import TIMEZONE, channel
+from config import TIMEZONE
 from typing import Dict, Any
 
 dt_manager = DateTimeManager(TIMEZONE)
-
+channel = bot.get_channel(CHANNEL_ID)
 
 async def display_embed(
         data: Dict[str, Any], 

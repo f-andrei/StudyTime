@@ -1,5 +1,6 @@
 import asyncio
 from tasks.tasks import Tasks
+from config import SLEEP_DURATION
 from typing import List
 
 
@@ -7,8 +8,6 @@ task = Tasks()
 
 
 class TaskScheduler:
-    SLEEP_DURATION: float = 15
-
     def __init__(self) -> None:
         self.due_task_ids: set[int] = set()
         self.due_task_ids_lock: asyncio.Lock = asyncio.Lock()
@@ -38,7 +37,7 @@ class TaskScheduler:
                 for task_id, data in tasks_dict.items():
                     await self.schedule_job(task_id, data['days'])
 
-                await asyncio.sleep(self.SLEEP_DURATION)
+                await asyncio.sleep(SLEEP_DURATION)
             self.running = False
 
     async def main(self) -> None:
@@ -51,7 +50,7 @@ class TaskScheduler:
         async with self.due_task_ids_lock:
             return list(self.due_task_ids)
 
-    def toggle_scheduler(self, stop: bool):
+    def toggle_scheduler(self, stop: bool) -> None:
         self.running = stop
 
 if __name__ == "__main__":

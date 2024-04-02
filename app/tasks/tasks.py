@@ -1,5 +1,6 @@
 import requests
 from app.config import DATABASE_API_URL
+from typing import Dict, Any
 
 
 class Tasks:
@@ -14,42 +15,42 @@ class Tasks:
     
     api_url = DATABASE_API_URL
 
-    def create_task(self, task_data: dict):
+    def create_task(self, task_data: Dict[str, Any]) -> Dict[str, Any]:
         url = "{}/{}".format(self.api_url, self.TASK_CREATE_ENDPOINT)
         response = requests.post(url, json=task_data)
         return response.json()
 
-    def get_task(self, task_id: int):
+    def get_task(self, task_id: int) -> Dict[str, Any]:
         url = "{}/{}/{}".format(self.api_url, self.TASK_GET_ENDPOINT, task_id)
         response = requests.get(url)
         return response.json()
     
-    def get_all_tasks(self, user_id: int):
+    def get_all_tasks(self, user_id: int) -> Dict[str, Any]:
         url = "{}/{}/{}".format(self.api_url, self.TASK_GET_ALL_ENDPOINT, user_id)
         response = requests.get(url)
         return response.json()
     
-    def update_task(self, task_data: dict, task_id: int):
+    def update_task(self, task_data: Dict[str, Any], task_id: int) -> Dict[str, Any]:
         url = "{}/{}/{}".format(self.api_url, self.TASK_UPDATE_ENDPOINT, task_id)
         response = requests.put(url, json=task_data)
         return response.json()
     
-    def delete_task(self, task_id: int):
+    def delete_task(self, task_id: int) -> Dict[str, Any]:
         url = "{}/{}/{}".format(self.api_url, self.TASK_DELETE_ENDPOINT, task_id)
         response = requests.delete(url)
         return response.json()
     
-    def add_repeat_days(self, repeat_days: dict, task_id: int):
+    def add_repeat_days(self, repeat_days: Dict[str, Any], task_id: int) -> Dict[str, Any]:
         url = "{}/{}/{}".format(self.api_url, self.REPEAT_DAYS_ADD_ENDPOINT, task_id)
         response = requests.post(url, json=repeat_days)
         return response.json()
     
-    def get_repeat_days(self, task_id: int):
+    def get_repeat_days(self, task_id: int) -> Dict[str, Any]:
         url = "{}/{}/{}".format(self.api_url, self.REPEAT_DAYS_GET_ENDPOINT, task_id)
         response = requests.get(url)
         return response.json()
 
-    def get_due_tasks(self):
+    def get_due_tasks(self) -> Dict[str, Any]:
         url = "{}/{}".format(self.api_url, self.TASK_GET_DUE_TASKS_ENDPOINT)
         response = requests.get(url)
         return response.json()

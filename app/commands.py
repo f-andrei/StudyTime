@@ -16,7 +16,7 @@ dt_manager = DateTimeManager(TIMEZONE)
 
 
 @bot.command(aliases=['bot', 'studybot', 'study'])
-async def greet(ctx):
+async def greet(ctx) -> None:
 	try:
 		await ctx.send(f'Hey {ctx.author.mention}')
 	except Exception as e:
@@ -62,7 +62,7 @@ async def help(ctx: commands.Context) -> None:
 
 @bot.tree.command(name="create_task", description="Create a task")
 @app_commands.guilds(DISCORD_ID)
-async def create_task(interaction: discord.Interaction):
+async def create_task(interaction: discord.Interaction) -> None:
     """creates a task"""
     await interaction.response.send_modal(TaskModal(action="create"))
 
@@ -112,14 +112,14 @@ async def all_tasks(ctx: commands.Context) -> None:
 
 @bot.tree.command(name="create_note", description="Create a note")
 @app_commands.guilds(DISCORD_ID)
-async def create_note(interaction: discord.Interaction):
+async def create_note(interaction: discord.Interaction) -> None:
     """creates a note"""
     await interaction.response.send_modal(NoteModal(action="create"))
 
 
 @bot.hybrid_command(name="notes", description="List, update or delete notes.")
 @app_commands.guilds(DISCORD_ID)
-async def all_notes(ctx):
+async def all_notes(ctx) -> None:
 	try:
 		user_id = ctx.author.id
 		notes = Notes()
@@ -158,7 +158,7 @@ async def all_notes(ctx):
 
 @bot.hybrid_command(name="chat", description="Chat with ChatGPT")
 @app_commands.guilds(DISCORD_ID)
-async def chat(ctx):
+async def chat(ctx) -> None:
 	"""Calls OpenAI's GPT API"""
 	try:
 		await ctx.send('Conversation started. Type "leave" to exit conversation.')
@@ -192,7 +192,7 @@ async def chat(ctx):
 
 # sync new commands
 @bot.command()
-async def sync(ctx):
+async def sync(ctx) -> None:
 	await bot.tree.sync(guild=DISCORD_ID)
 	print("synced")
 

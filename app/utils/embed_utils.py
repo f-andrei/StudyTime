@@ -1,17 +1,26 @@
 from utils.dt_manager import DateTimeManager
 import discord
-from config import CHANNEL_ID, bot, DELETE_AFTER
+from config import DELETE_AFTER
 from tasks.tasks import Tasks
-from config import TIMEZONE
+from config import TIMEZONE, channel
+from typing import Dict, Any
 
 dt_manager = DateTimeManager(TIMEZONE)
 
 
-
-async def display_embed(data: dict, task_id=None, title=None, type=None, del_after=None, user_id=None, color=discord.Color.brand_green()):
-    channel = bot.get_channel(CHANNEL_ID)
+async def display_embed(
+        data: Dict[str, Any], 
+        task_id: int = None, 
+        title: str = None, 
+        type: str = None, 
+        del_after: int = None, 
+        user_id: int = None, 
+        color=discord.Color.brand_green()
+        ) -> None:
+    
     repeat_days = []
     repeat_days_list = []
+    
     if type == 'task':
         fields = {
             "Name": data["name"], 
@@ -76,4 +85,3 @@ async def display_embed(data: dict, task_id=None, title=None, type=None, del_aft
         mention = f"Hey <@{user_id}>"
         await channel.send(mention, delete_after=delete_time)
     await channel.send(embed=embed, delete_after=delete_time)
-    return

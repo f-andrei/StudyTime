@@ -4,7 +4,7 @@ from typing import Optional, Tuple
 
 
 class DateTimeManager:
-    def __init__(self, tz: Optional[str] = None):
+    def __init__(self, tz: Optional[str] = None) -> None:
         self.tz = tz
         self.datetime_format = "%Y-%m-%d %H:%M:%S"
         # self.datetime_format = "%d/%m/%Y %H:%M:%S"
@@ -16,7 +16,7 @@ class DateTimeManager:
             datetime_now = datetime_now.replace(tzinfo=timezone('UTC')).astimezone(new_tz)
         return datetime_now
 
-    def get_day_number(self, datetime_str):
+    def get_day_number(self, datetime_str: str) -> int:
         dt_obj = datetime.strptime(datetime_str, "%Y-%m-%d")
         day_number = dt_obj.weekday()
         return (day_number + 1) % 7

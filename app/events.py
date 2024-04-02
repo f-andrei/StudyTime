@@ -1,7 +1,7 @@
 import discord
 from discord.ext import tasks, commands
 from tasks.reminder import TaskScheduler
-from config import REMIND_LOOP_INTERVAL, STATUS_LOOP_INTERVAL, TASK_POSTPONE_INTERVAL
+from config import REMIND_LOOP_INTERVAL, STATUS_LOOP_INTERVAL
 import asyncio
 from typing import List
 from utils.embed_utils import display_embed
@@ -77,9 +77,6 @@ class Events(commands.Cog):
 						notify_tasks.append(task_data)
 						duration.append(task_data["duration"])
 					except IndexError:
-						# Since this program is supposed to run continuously, the user may
-						# decide to delete a task, in this case to avoid crashes, said
-						# task will be removed from due tasks.
 						due_task_ids.remove(task_id)
 						self.task_scheduler.due_task_ids.clear()
 						print(f"IndexError: Task with ID {task_id} not found.")
@@ -89,6 +86,8 @@ class Events(commands.Cog):
 				await self.notify_tasks(task=notify_tasks[0], duration=duration)
 		except IndexError as e:
 			print(f"Error in remind_tasks(): {e}")
+
+
 	@tasks.loop(seconds=STATUS_LOOP_INTERVAL)
 	async def statusloop(self) -> None:
 		"""Discord status loop"""
@@ -97,12 +96,16 @@ class Events(commands.Cog):
 			status=discord.Status.online,
 			activity=discord.Activity(
 				type=discord.ActivityType.watching,
-				name=f".help"))
+				name=f".help"
+				)
+			)
 		await asyncio.sleep(10)
 		
 		await self.bot.change_presence(
 			status=discord.Status.online,
 			activity=discord.Activity(
 				type=discord.ActivityType.watching,
-				name=f"you study..."))
+				name=f"you study..."
+				)
+			)
 		await asyncio.sleep(10)

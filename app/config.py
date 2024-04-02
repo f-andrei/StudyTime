@@ -30,11 +30,11 @@ DELETE_AFTER = 180
 # Delay for listing tasks/notes
 MESSAGE_DELAY = 0.5
 # Discord's task loop interval for checking new tasks
-REMIND_LOOP_INTERVAL = 5
+REMIND_LOOP_INTERVAL = 15
 # Interval to update Bot's status ("watching you study...", "watching .help")
 STATUS_LOOP_INTERVAL = 10
 # Task scheduler interval 
-SLEEP_DURATION = 15
+SLEEP_DURATION = 20
 
 # Discord's button colors
 BLURPLE_STYLE = discord.ButtonStyle.blurple

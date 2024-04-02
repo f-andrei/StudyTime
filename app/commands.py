@@ -13,7 +13,7 @@ from tasks.tasks import Tasks
 
 
 dt_manager = DateTimeManager(TIMEZONE)
-channel = bot.get_channel(CHANNEL_ID)
+
 
 @bot.command(aliases=['bot', 'studybot', 'study'])
 async def greet(ctx) -> None:
@@ -73,6 +73,7 @@ async def all_tasks(ctx: commands.Context) -> None:
 	"""List all active tasks"""
 	try:
 		user_id = ctx.author.id
+		channel = bot.get_channel(CHANNEL_ID)
 		tasks = Tasks()
 		tasks = tasks.get_all_tasks(user_id=user_id)
 		if not tasks:
@@ -122,6 +123,7 @@ async def create_note(interaction: discord.Interaction) -> None:
 async def all_notes(ctx) -> None:
 	try:
 		user_id = ctx.author.id
+		channel = bot.get_channel(CHANNEL_ID)
 		notes = Notes()
 		all_notes = notes.get_all_notes(user_id)
 		if all_notes:
@@ -160,6 +162,7 @@ async def all_notes(ctx) -> None:
 @app_commands.guilds(DISCORD_ID)
 async def chat(ctx) -> None:
 	"""Calls OpenAI's GPT API"""
+	channel = bot.get_channel(CHANNEL_ID)
 	try:
 		await ctx.send('Conversation started. Type "leave" to exit conversation.')
 		while True:

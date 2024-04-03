@@ -9,10 +9,11 @@ notes = Notes()
 dt_manager = DateTimeManager("America/Sao_Paulo")
 
 class NoteModal(ui.Modal, title='Create note'):
-    def __init__(self, action: str, note_id: int = None) -> None:
+    def __init__(self, action: str, note_id: int = None, channel_id: int = None) -> None:
         super().__init__()
         self.action = action
         self.note_id = note_id
+        self.channel_id = channel_id
 
     name = ui.TextInput(label='Name', placeholder="Replace batteries",
                         style=discord.TextStyle.short, 
@@ -48,7 +49,8 @@ class NoteModal(ui.Modal, title='Create note'):
                     embed_2.title="Unable to create note. Missing fields on invalid data."
                     await interaction.response.send_message(
                                                     embed=embed_2, 
-                                                    delete_after=DELETE_AFTER
+                                                    delete_after=DELETE_AFTER,
+                                                    ephemeral=True
                                                     )
                     return
 
@@ -57,11 +59,17 @@ class NoteModal(ui.Modal, title='Create note'):
                 embed_2.title = "Unable to create note. Missing fields or invalid data."
                 await interaction.response.send_message(
                                                 embed=embed_2, 
-                                                delete_after=DELETE_AFTER
+                                                delete_after=DELETE_AFTER,
+                                                ephemeral=True
                                                 )
                 return
             
-            await display_embed(note_data, type='note', title="Note created sucessfully!")
+            await display_embed(
+                channel_id=self.channel_id, 
+                data=note_data, 
+                type='note', 
+                title="Note created sucessfully!"
+                )
             await interaction.response.defer()
 
         if self.action == 'update':
@@ -81,14 +89,16 @@ class NoteModal(ui.Modal, title='Create note'):
                 embed.description = None
                 await interaction.response.send_message(
                                                 embed=embed, 
-                                                delete_after=DELETE_AFTER
+                                                delete_after=DELETE_AFTER,
+                                                ephemeral=True
                                                 )
             else:
                 embed.title = "Note updated!"
                 embed.description = None
                 await interaction.response.send_message(
                                                 embed=embed, 
-                                                delete_after=DELETE_AFTER
+                                                delete_after=DELETE_AFTER,
+                                                ephemeral=True
                                                 )
 
 
@@ -112,7 +122,7 @@ class EditNote(discord.ui.View):
             await interaction.followup.delete_message(self.msg_id)
         else:
             self.embed.title = "Note not found."
-            await interaction.response.send_message(embed=self.embed)
+            await interaction.response.send_message(embed=self.embed, ephemeral=True)
             
     @discord.ui.button(label="Delete", style=RED_STYLE)
     async def delete(self, interaction: discord.Interaction, button) -> None:
@@ -128,5 +138,5 @@ class EditNote(discord.ui.View):
             self.embed.color = discord.Color.red()
             
         button.disabled = True
-        await interaction.response.send_message(embed=self.embed)
+        await interaction.response.send_message(embed=self.embed, ephemeral=True)
         await interaction.followup.delete_message(self.msg_id)

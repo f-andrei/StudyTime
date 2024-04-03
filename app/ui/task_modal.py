@@ -14,10 +14,11 @@ five_from_dt_now = dt_manager.format_datetime(five_from_dt_now)
 
 
 class TaskModal(ui.Modal, title="Create task"):
-	def __init__(self, action: str, task_id: int = None) -> None:
+	def __init__(self, action: str, task_id: int = None, channel_id = None) -> None:
 		super().__init__()
 		self.action = action
 		self.task_id = task_id
+		self.channel_id = channel_id
 
 	name = ui.TextInput(label='Name', placeholder="Study",
 						style=discord.TextStyle.short,
@@ -72,7 +73,8 @@ class TaskModal(ui.Modal, title="Create task"):
 						embed_2.title="Unable to create task. Missing fields or invalid data."
 						await interaction.response.send_message(
 														embed=embed_2, 
-														delete_after=DELETE_AFTER
+														delete_after=DELETE_AFTER,
+														ephemeral=True
 														)
 						return
 			
@@ -81,16 +83,18 @@ class TaskModal(ui.Modal, title="Create task"):
 					embed_2.title = "Unable to create task. Missing fields or invalid data."
 					await interaction.response.send_message(
 													embed=embed_2, 
-													delete_after=DELETE_AFTER
+													delete_after=DELETE_AFTER, 
+													ephemeral=True
 													)
 					return
 				
 				self.task_id = task_created["id"]
-				button_view=IsRepeatable(embed_2, task_data, self.task_id, self.start_date)
+				button_view=IsRepeatable(embed_2, task_data, self.task_id, self.start_date, self.channel_id)
 				await interaction.response.defer(thinking=True)
 				msg:discord.Message = await interaction.followup.send(
 																	embed=embed_2, 
-																	view=button_view
+																	view=button_view, 
+																	ephemeral=True
 																	)
 				button_view.msg_id = msg.id
 
@@ -124,14 +128,16 @@ class TaskModal(ui.Modal, title="Create task"):
 					embed.description = None
 					await interaction.response.send_message(
 														embed=embed, 
-														delete_after=DELETE_AFTER
+														delete_after=DELETE_AFTER,
+														ephemeral=True
 														)
 				else:
 					embed.title = "Task updated!"
 					embed.description = None
 					await interaction.response.send_message(
 													embed=embed, 
-													delete_after=DELETE_AFTER
+													delete_after=DELETE_AFTER,
+													ephemeral=True
 													)
 					
 
@@ -139,19 +145,20 @@ class IsRepeatable(discord.ui.View):
 	msg_id = None
 	button: discord.ui.Button
 
-	def __init__(self, embed, task_data, task_id, start_date) -> None:
+	def __init__(self, embed, task_data, task_id, start_date, channel_id) -> None:
 		super().__init__()
 		self.is_repeatable = False
 		self.embed = embed
 		self.task_data = task_data
 		self.task_id = task_id
 		self.start_date = start_date
+		self.channel_id = channel_id
 
 	@discord.ui.button(label="Yes!", style=SUCCESS_STYLE)
 	async def yes(self, interaction: discord.Interaction, button) -> None:
 		self.is_repeatable = True
 		button.disabled = True
-		days_button_view = DaysToRepeatView(self.task_data, self.task_id, self.msg_id)
+		days_button_view = DaysToRepeatView(self.task_data, self.task_id, self.msg_id, self.channel_id)
 		self.embed.title = "Which days would you like it to repeat?"
 		await interaction.response.edit_message(
 										embed=self.embed, 
@@ -175,8 +182,8 @@ class IsRepeatable(discord.ui.View):
 			)
 		last_task_id = self.task_id
 		await display_embed(
-			self.task_data, 
-			last_task_id, 
+			data=self.task_data, 
+			task_id=last_task_id, 
 			title="Task created sucessfully!", 
 			del_after=86400, 
 			type='task'
@@ -212,5 +219,5 @@ class EditTask(discord.ui.View):
 			self.embed.title = f"Task doesn't exist or is already deleted."
 			self.embed.color = discord.Color.red()
 		button.disabled = True
-		await interaction.response.send_message(embed=self.embed)
+		await interaction.response.send_message(embed=self.embed, ephemeral=True)
 		await interaction.followup.delete_message(self.msg_id)

@@ -1,5 +1,5 @@
 import requests
-from app.config import DATABASE_API_URL
+from config import DATABASE_API_URL
 from typing import Dict, Any
 
 class Notes:

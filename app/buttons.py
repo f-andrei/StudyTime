@@ -1,6 +1,7 @@
 import discord
 from tasks.tasks import Tasks
 from utils.embed_utils import display_embed
+from typing import Dict, Any
 
 
 class DaysToRepeatView(discord.ui.View):
@@ -8,12 +9,13 @@ class DaysToRepeatView(discord.ui.View):
     RED_STYLE = discord.ButtonStyle.red
     SUCCESS_STYLE = discord.ButtonStyle.success
     button: discord.ui.Button
-    def __init__(self, task_data, task_id, msg_id) -> None:
+    def __init__(self, task_data: Dict[str, Any], task_id: int, msg_id: int, channel_id: int) -> None:
         super().__init__()
         self.days = []
         self.task_data = task_data
         self.task_id = task_id
         self.msg_id = msg_id
+        self.channel_id = channel_id
 
     @discord.ui.button(label="Monday", style=BLURPLE_STYLE)
     async def monday(self, interaction: discord.Interaction, button) -> None:
@@ -66,7 +68,7 @@ class DaysToRepeatView(discord.ui.View):
         await interaction.response.edit_message(view=self)
 
     @discord.ui.button(label="Send", style=SUCCESS_STYLE)
-    async def send(self, interaction: discord.Interaction) -> None:
+    async def send(self, interaction: discord.Interaction, button) -> None:
         task = Tasks()
         task.add_repeat_days(task_id=self.task_id, repeat_days=self.days)
         for child in self.children:
@@ -75,10 +77,12 @@ class DaysToRepeatView(discord.ui.View):
         await interaction.response.edit_message(view=self)
         await interaction.followup.delete_message(self.msg_id)
         await display_embed(
-            self.task_data, 
-            self.task_id, 
+            data=self.task_data, 
+            task_id=self.task_id, 
             title="Task created sucessfully!", 
             del_after=86400, 
-            type='task')
+            type='task',
+            channel_id=self.channel_id
+            )
 
 

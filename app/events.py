@@ -8,11 +8,12 @@ from utils.embed_utils import display_embed
 from tasks.tasks import Tasks
 
 class Events(commands.Cog):
+	channel_id = None
 	def __init__(self, bot: commands.Bot) -> None:
 		self.bot = bot
 		self.task_scheduler = TaskScheduler()
 		self.task = Tasks()
-	
+
 	async def on_ready(self) -> None:
 		"""Starts status loop and task reminder when ready."""
 		servers_count = 0
@@ -36,24 +37,26 @@ class Events(commands.Cog):
 				print('NOTIFY')
 				duration = duration[0] * 60
 				await display_embed(
-					task, 
+					data=task, 
 					title="Task is due!", 
 					user_id=task["user_id"], 
 					del_after=duration, 
 					color=discord.Color.dark_orange(), 
-					type='task'
+					type='task',
+					channel_id=self.channel_id
 					)
 				await asyncio.sleep(duration)
 
 				title="Task ended."
 				
 				await display_embed(
-					task, 
+					data=task, 
 					title=title, 
 					user_id=task["user_id"], 
 					color=discord.Color.pink(), 
 					del_after=86400, 
-					type='task'
+					type='task',
+					channel_id=self.channel_id
 					)
 
 			self.task_scheduler.toggle_scheduler(True)

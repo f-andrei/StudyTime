@@ -1,20 +1,23 @@
+from discord.ext import commands
 from utils.dt_manager import DateTimeManager
 import discord
-from config import DELETE_AFTER, CHANNEL_ID, bot
+from config import DELETE_AFTER, bot
 from tasks.tasks import Tasks
 from config import TIMEZONE
-from typing import Dict, Any
+from typing import Dict, Any, Literal, Optional
 
 dt_manager = DateTimeManager(TIMEZONE)
 
 async def display_embed(
         data: Dict[str, Any], 
-        task_id: int = None, 
-        title: str = None, 
-        type: str = None, 
-        del_after: int = None, 
-        user_id: int = None, 
-        color=discord.Color.brand_green()
+        type: Optional[Literal["note", "task"]], 
+        title: Optional[str] = None, 
+        task_id: Optional[int] = None, 
+        user_id: Optional[int] = None, 
+        del_after: Optional[int] = None, 
+        ctx: Optional[commands.Context] = None,
+        channel_id: Optional[int] = None,
+        color=discord.Color.brand_green(),
         ) -> None:
     
     repeat_days = []
@@ -80,8 +83,11 @@ async def display_embed(
     else:
         delete_time = DELETE_AFTER
     
-    channel = bot.get_channel(CHANNEL_ID)
-    if user_id:
-        mention = f"Hey <@{user_id}>"
-        await channel.send(mention, delete_after=delete_time)
-    await channel.send(embed=embed, delete_after=delete_time)
+    if channel_id:
+        channel = bot.get_channel(channel_id)
+        if user_id:
+            mention = f"Hey <@{user_id}>"
+            await channel.send(mention, delete_after=delete_time, ephemeral=True)
+        await channel.send(embed=embed, delete_after=delete_time, ephemeral=True)
+    else:
+        await ctx.send(embed=embed, delete_after=delete_time, ephemeral=True)

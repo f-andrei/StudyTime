@@ -87,7 +87,7 @@ async def display_embed(
         channel = bot.get_channel(channel_id)
         if user_id:
             mention = f"Hey <@{user_id}>"
-            await channel.send(mention, delete_after=delete_time, ephemeral=True)
-        await channel.send(embed=embed, delete_after=delete_time, ephemeral=True)
+            await channel.send(mention, delete_after=delete_time)
+        await channel.send(embed=embed, delete_after=delete_time)
     else:
         await ctx.send(embed=embed, delete_after=delete_time, ephemeral=True)

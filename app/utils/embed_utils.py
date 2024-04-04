@@ -28,7 +28,7 @@ async def display_embed(
             "Name": data["name"], 
             "Description": data["description"], 
             "Links": data["links"], 
-            "Start date": data["start_date"], 
+            "Start date": dt_manager.format_datetime(dt=data["start_date"], format="%d/%m/%Y"), 
             "Time": data["time"], 
             "Duration": data["duration"], 
         }
@@ -70,7 +70,7 @@ async def display_embed(
            "Name": data["name"],
            "Description": data["description"],
            "Links": data["links"],
-           "Created at": data["created_at"],
+           "Created at": dt_manager.format_datetime(dt=data["created_at"], format="%d/%m/%Y %H:%M:%S"),
        }
 
     embed = discord.Embed(colour=color, title=title)
@@ -87,7 +87,7 @@ async def display_embed(
         channel = bot.get_channel(channel_id)
         if user_id:
             mention = f"Hey <@{user_id}>"
-            await channel.send(mention, delete_after=delete_time, ephemeral=True)
-        await channel.send(embed=embed, delete_after=delete_time, ephemeral=True)
+            await channel.send(mention, delete_after=delete_time)
+        await channel.send(embed=embed, delete_after=delete_time)
     else:
         await ctx.send(embed=embed, delete_after=delete_time, ephemeral=True)

@@ -10,7 +10,7 @@ from utils.embed_utils import display_embed
 dt_manager = DateTimeManager(TIMEZONE)
 task = Tasks()
 five_from_dt_now = dt_manager.calculate_datetime(dt_manager.get_current_time(), 5)
-five_from_dt_now = dt_manager.format_datetime(five_from_dt_now)
+five_from_dt_now = dt_manager.format_datetime(dt=five_from_dt_now, format="%d/%m/%Y %H:%M:%S")
 
 
 class TaskModal(ui.Modal, title="Create task"):
@@ -79,15 +79,16 @@ class TaskModal(ui.Modal, title="Create task"):
 						return
 			
 				task_created = task.create_task(task_data=task_data)
-				if not task_created:
+				if 'detail' in task_created and task_created['detail'][0]['ctx']['error']:
 					embed_2.title = "Unable to create task. Missing fields or invalid data."
+					print(f"Error creating task: {task_created['detail'][0]['ctx']['error']}")
 					await interaction.response.send_message(
 													embed=embed_2, 
 													delete_after=DELETE_AFTER, 
 													ephemeral=True
 													)
 					return
-				
+				print(task_created)
 				self.task_id = task_created["id"]
 				button_view=IsRepeatable(embed_2, task_data, self.task_id, self.start_date, self.channel_id)
 				await interaction.response.defer(thinking=True)

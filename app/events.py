@@ -76,9 +76,9 @@ class Events(commands.Cog):
 				for task_id in due_task_ids:
 					try:
 						task_data = await asyncio.to_thread(self.task.get_task, task_id)
-
-						notify_tasks.append(task_data)
-						duration.append(task_data["duration"])
+						if task_data:
+							notify_tasks.append(task_data)
+							duration.append(task_data["duration"])
 					except IndexError:
 						due_task_ids.remove(task_id)
 						self.task_scheduler.due_task_ids.clear()

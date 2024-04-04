@@ -6,8 +6,7 @@ from typing import Optional, Tuple
 class DateTimeManager:
     def __init__(self, tz: Optional[str] = None) -> None:
         self.tz = tz
-        self.datetime_format = "%Y-%m-%d %H:%M:%S"
-        # self.datetime_format = "%d/%m/%Y %H:%M:%S"
+        self.datetime_format = "%d/%m/%Y %H:%M:%S"
  
     def get_current_time(self) -> datetime:
         datetime_now = datetime.utcnow()
@@ -26,8 +25,24 @@ class DateTimeManager:
         formatted_datetime_now = datetime_now.strftime(self.datetime_format)
         return formatted_datetime_now
 
-    def format_datetime(self, dt: datetime) -> str:
-        formatted_datetime = dt.strftime(self.datetime_format)
+    def format_datetime(self, dt, format: str) -> str:
+        if isinstance(dt, str):
+            try:
+                dt = datetime.strptime(dt, "%Y-%m-%d")
+            except ValueError:
+                try:
+                    dt = datetime.strptime(dt, "%d/%m/%Y")
+                except ValueError:
+                    try:
+                        dt = datetime.strptime(dt, "%Y-%m-%dT%H:%M:%S")
+                    except ValueError:
+                        try:
+                            dt = datetime.strptime(dt, "%d/%m/%Y %H:%M:%S")
+                        except ValueError:
+                            return "Invalid date format." \
+                                "Expected one of those: '%Y-%m-%d', '%d/%m/%Y', '%Y-%m-%dT%H:%M:%S', '%d-%m-%Y %H:%M:%S'."
+
+        formatted_datetime = dt.strftime(format)
         return formatted_datetime
 
     def get_due_tasks_time_range(self) -> Tuple[datetime, datetime]:

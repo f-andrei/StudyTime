@@ -179,7 +179,7 @@ class IsRepeatable(discord.ui.View):
 		day_number = dt_manager.get_day_number(str(self.start_date))
 		task.add_repeat_days(
 			task_id=self.task_id, 
-			repeat_days={"day_number": [day_number]}
+			repeat_days=[day_number]
 			)
 		last_task_id = self.task_id
 		await display_embed(

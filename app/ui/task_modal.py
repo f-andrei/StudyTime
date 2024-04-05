@@ -183,6 +183,7 @@ class IsRepeatable(discord.ui.View):
 			)
 		last_task_id = self.task_id
 		await display_embed(
+			channel_id=self.channel_id,
 			data=self.task_data, 
 			task_id=last_task_id, 
 			title="Task created sucessfully!", 

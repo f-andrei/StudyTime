@@ -6,22 +6,17 @@ import os
 
 load_dotenv()
 
-# Discord's channel where the bot is supposed to send messages
-CHANNEL_ID = int(os.getenv('CHANNEL_ID'))
-# Discord's server ID
-DISCORD_ID = discord.Object(id=os.getenv('DISCORD_ID'))
-# Discord's Bot token
-DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
 # Database's API URL (assuming you've deployed it to heroku using this API: 
 # https://github.com/f-andrei/fast-api-tasks-notes-crud)
+
 DATABASE_API_URL = os.getenv("DATABASE_API_URL")
+
+# To run locally use your localhost
+#DATABASE_API_URL = "http://127.0.0.1:8000" 
+
 # Openai's API key
 OPENAI_API_KEY = os.getenv("OPENAI_TOKEN")
 
-ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_DIR = 'database'
-DB_NAME = 'studytime.sqlite3'
-DB_FILE = os.path.join(ROOT_DIR, DB_DIR, DB_NAME)
 
 TIMEZONE = 'America/Sao_Paulo'
 

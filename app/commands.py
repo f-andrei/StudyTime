@@ -1,5 +1,6 @@
 import discord
 from notes.notes import Notes
+from users.users import User
 from config import bot, DELETE_AFTER, TIMEZONE, MESSAGE_DELAY
 from utils.embed_utils import  display_embed
 from discord.ext import commands
@@ -10,7 +11,6 @@ from ui.task_modal import  EditTask, TaskModal
 from ui.note_modal import EditNote, NoteModal
 from tasks.tasks import Tasks
 from typing import Optional, Literal
-from events import Events
 
 
 dt_manager = DateTimeManager(TIMEZONE)
@@ -35,6 +35,9 @@ async def help(ctx: commands.Context) -> None:
 		These are the commands available:**""",
 		url="https://github.com/f-andrei/StudyTime")
 	
+	embed.add_field(
+		name="**Register**", value="```/register```", inline=False
+		)
 	embed.add_field(
 		name="**Create a task**", value="```/create_task```", inline=False
 		)
@@ -62,9 +65,9 @@ async def help(ctx: commands.Context) -> None:
 
 @bot.tree.command(name="create_task", description="Create a task")
 async def create_task(interaction: discord.Interaction) -> None:
-    """creates a task"""
-    channel_id = Events.channel_id = interaction.channel.id
-    await interaction.response.send_modal(TaskModal(action="create", channel_id=channel_id))
+	"""creates a task"""
+	user_id = interaction.user.id
+	await interaction.response.send_modal(TaskModal(action="create", user_id=user_id))
 
 
 @bot.hybrid_command(name="tasks", description="List, update or delete tasks.")
@@ -90,19 +93,19 @@ async def all_tasks(ctx: commands.Context) -> None:
 
 		for task in tasks:
 			await display_embed(
-				ctx=ctx,
 				data=task, 
 				title="Task", 
-				task_id=task["id"], 
+				task_id=task["id"],
+				user_id=user_id,
 				color=discord.Color.from_rgb(68, 0, 229), 
 				type='task'
 				)
 			view = EditTask(task)
 			msg: discord.Message = await ctx.send(
-													view=view, 
-													delete_after=DELETE_AFTER,
-													ephemeral=True
-													)
+											view=view, 
+											delete_after=DELETE_AFTER,
+											ephemeral=True
+											)
 			view.msg_id = msg.id
 			sleep(MESSAGE_DELAY)
 		
@@ -112,14 +115,9 @@ async def all_tasks(ctx: commands.Context) -> None:
 
 @bot.tree.command(name="create_note", description="Create a note")
 async def create_note(interaction: discord.Interaction) -> None:
-    """creates a note"""
-    channel_id = Events.channel_id = interaction.channel.id
-    await interaction.response.send_modal(
-		NoteModal(
-			action="create", 
-			channel_id=channel_id
-			)
-		)
+	"""creates a note"""
+	user_id = interaction.user.id
+	await interaction.response.send_modal(NoteModal(action="create", user_id=user_id))
 
 
 @bot.hybrid_command(name="notes", description="List, update or delete notes.")
@@ -133,12 +131,12 @@ async def all_notes(ctx: commands.Context) -> None:
 
 			for note in all_notes:
 				await display_embed(
-					ctx=ctx,
 					data=note, 
 					title="Note", 
 					task_id=note["id"], 
 					color=discord.Color.from_rgb(68, 0, 229), 
-					type='note'
+					type='note',
+					user_id=user_id
 					)
 				view = EditNote(note)
 				msg: discord.Message = await ctx.send(
@@ -160,6 +158,33 @@ async def all_notes(ctx: commands.Context) -> None:
 			await ctx.send(embed=embed, ephemeral=True)
 	except Exception as e:
 		print(f"Error at all_notes(): {e}")
+
+
+@bot.hybrid_command(name="register", description="Create")
+async def register(ctx: commands.Context) -> None:
+	try:
+		user = User()
+		user_data = {
+			"id": str(ctx.author.id),
+			"username": str(ctx.author.name),
+			"channel_id": str(ctx.channel.id),
+			"server_id": str(ctx.guild.id)
+		}
+
+		user = user.create_user(user_data)
+		if user:
+			embed = discord.Embed(
+					colour=discord.Color.green(), 
+					title="User registered successfully!"
+					)
+			
+			embed.add_field(name=f"Username", value=f"```{user['username']}```", inline=False)
+			embed.add_field(name=f"Server", value=f"```{ctx.guild.name}```", inline=False)
+			embed.add_field(name=f"Preferred channel", value=f"```{ctx.channel.name}```", inline=False)
+			await ctx.send(embed=embed, ephemeral=True)
+
+	except Exception as e:
+		print(f"Error at register(): {e}")
 
 
 @bot.hybrid_command(name="chat", description="Chat with ChatGPT")

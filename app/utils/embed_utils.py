@@ -5,6 +5,7 @@ from config import DELETE_AFTER, bot
 from tasks.tasks import Tasks
 from config import TIMEZONE
 from typing import Dict, Any, Literal, Optional
+from users.users import User
 
 dt_manager = DateTimeManager(TIMEZONE)
 
@@ -15,7 +16,6 @@ async def display_embed(
         task_id: Optional[int] = None, 
         user_id: Optional[int] = None, 
         del_after: Optional[int] = None, 
-        ctx: Optional[commands.Context] = None,
         channel_id: Optional[int] = None,
         color=discord.Color.brand_green(),
         ) -> None:
@@ -83,11 +83,10 @@ async def display_embed(
     else:
         delete_time = DELETE_AFTER
     
+    user = User()
+    channel_id = user.get_channel_id(user_id=user_id)
     if channel_id:
-        channel = bot.get_channel(channel_id)
-        if user_id:
-            mention = f"Hey <@{user_id}>"
-            await channel.send(mention, delete_after=delete_time)
+        channel = bot.get_channel(int(channel_id))
         await channel.send(embed=embed, delete_after=delete_time)
     else:
-        await ctx.send(embed=embed, delete_after=delete_time, ephemeral=True)
+        return "No channel ID"

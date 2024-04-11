@@ -9,13 +9,13 @@ class DaysToRepeatView(discord.ui.View):
     RED_STYLE = discord.ButtonStyle.red
     SUCCESS_STYLE = discord.ButtonStyle.success
     button: discord.ui.Button
-    def __init__(self, task_data: Dict[str, Any], task_id: int, msg_id: int, channel_id: int) -> None:
+    def __init__(self, task_data: Dict[str, Any], task_id: int, msg_id: int, user_id: int) -> None:
         super().__init__()
         self.days = []
         self.task_data = task_data
         self.task_id = task_id
         self.msg_id = msg_id
-        self.channel_id = channel_id
+        self.user_id = user_id
 
     @discord.ui.button(label="Monday", style=BLURPLE_STYLE)
     async def monday(self, interaction: discord.Interaction, button) -> None:
@@ -82,7 +82,7 @@ class DaysToRepeatView(discord.ui.View):
             title="Task created sucessfully!", 
             del_after=86400, 
             type='task',
-            channel_id=self.channel_id
+            user_id=self.user_id
             )
 
 

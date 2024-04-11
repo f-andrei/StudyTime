@@ -9,11 +9,11 @@ notes = Notes()
 dt_manager = DateTimeManager("America/Sao_Paulo")
 
 class NoteModal(ui.Modal, title='Create note'):
-    def __init__(self, action: str, note_id: int = None, channel_id: int = None) -> None:
+    def __init__(self, action: str, note_id: int = None, user_id: int = None) -> None:
         super().__init__()
         self.action = action
         self.note_id = note_id
-        self.channel_id = channel_id
+        self.user_id = user_id
 
     name = ui.TextInput(label='Name', placeholder="Replace batteries",
                         style=discord.TextStyle.short, 
@@ -65,10 +65,10 @@ class NoteModal(ui.Modal, title='Create note'):
                 return
             
             await display_embed(
-                channel_id=self.channel_id, 
                 data=note_data, 
                 type='note', 
-                title="Note created sucessfully!"
+                title="Note created sucessfully!",
+                user_id=self.user_id
                 )
             await interaction.response.defer()
 

@@ -14,11 +14,11 @@ five_from_dt_now = dt_manager.format_datetime(dt=five_from_dt_now, format="%d/%m
 
 
 class TaskModal(ui.Modal, title="Create task"):
-	def __init__(self, action: str, task_id: int = None, channel_id = None) -> None:
+	def __init__(self, action: str, task_id: int = None, user_id: int = None) -> None:
 		super().__init__()
 		self.action = action
 		self.task_id = task_id
-		self.channel_id = channel_id
+		self.user_id = user_id
 
 	name = ui.TextInput(label='Name', placeholder="Study",
 						style=discord.TextStyle.short,
@@ -88,9 +88,9 @@ class TaskModal(ui.Modal, title="Create task"):
 													ephemeral=True
 													)
 					return
-				print(task_created)
+
 				self.task_id = task_created["id"]
-				button_view=IsRepeatable(embed_2, task_data, self.task_id, self.start_date, self.channel_id)
+				button_view=IsRepeatable(embed_2, task_data, self.task_id, self.start_date, self.user_id)
 				await interaction.response.defer(thinking=True)
 				msg:discord.Message = await interaction.followup.send(
 																	embed=embed_2, 
@@ -146,20 +146,20 @@ class IsRepeatable(discord.ui.View):
 	msg_id = None
 	button: discord.ui.Button
 
-	def __init__(self, embed, task_data, task_id, start_date, channel_id) -> None:
+	def __init__(self, embed, task_data, task_id, start_date, user_id) -> None:
 		super().__init__()
 		self.is_repeatable = False
 		self.embed = embed
 		self.task_data = task_data
 		self.task_id = task_id
 		self.start_date = start_date
-		self.channel_id = channel_id
+		self.user_id = user_id
 
 	@discord.ui.button(label="Yes!", style=SUCCESS_STYLE)
 	async def yes(self, interaction: discord.Interaction, button) -> None:
 		self.is_repeatable = True
 		button.disabled = True
-		days_button_view = DaysToRepeatView(self.task_data, self.task_id, self.msg_id, self.channel_id)
+		days_button_view = DaysToRepeatView(self.task_data, self.task_id, self.msg_id, self.user_id)
 		self.embed.title = "Which days would you like it to repeat?"
 		await interaction.response.edit_message(
 										embed=self.embed, 
@@ -183,12 +183,12 @@ class IsRepeatable(discord.ui.View):
 			)
 		last_task_id = self.task_id
 		await display_embed(
-			channel_id=self.channel_id,
 			data=self.task_data, 
 			task_id=last_task_id, 
 			title="Task created sucessfully!", 
 			del_after=86400, 
-			type='task'
+			type='task',
+			user_id=self.user_id
 			)
 		await interaction.response.edit_message(view=self.clear_items())
 		await interaction.followup.delete_message(self.msg_id)

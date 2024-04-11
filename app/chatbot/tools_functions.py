@@ -1,6 +1,10 @@
 import sqlite3
-from config import DB_FILE
+import os
 
+ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_DIR = 'database'
+DB_NAME = 'studytime.sqlite3'
+DB_FILE = os.path.join(ROOT_DIR, DB_DIR, DB_NAME)
 
 def analyze_all_tables():
     with sqlite3.connect(DB_FILE) as conn:

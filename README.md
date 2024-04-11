@@ -4,20 +4,25 @@ The StudyTime Discord Bot is an application developed for Discord with the aim o
 
 ## Features
 
-1. **Task Management**
+1. **User Registration**
+   - **/register** Register user. Used to gather server's ID, user's ID and channel's ID.
+
+2. **Task Management**
    - **/create_task:** Creates a new task.
    - **/tasks:** Lists all tasks. For each task there are buttons to Edit and Delete task.
 
-2. **Note Management**
+3. **Note Management**
    - **/create_note:** Creates a new note.
    - **/notes:** Lists all notes. For each task there are buttons to Edit and Delete note.
 
-3. **Chat with ChatGPT**
+4. **Chat with ChatGPT**
    - **/chat:** Initiates a conversation with ChatGPT to get answers to your questions or start a conversation.
 
-4. **Alerts**
+5. **Alerts**
    - Alerts are automatically sent at scheduled times for each task.
 
+6. **Help**
+   - **/help** Contains all commands.
 
 ## Installation Guide
 
@@ -46,11 +51,9 @@ The StudyTime Discord Bot is an application developed for Discord with the aim o
      
      ```plaintext
      DISCORD_TOKEN=your_discord_bot_token_here
-     CHANNEL_ID=your_discord_channel_id_here
-     DISCORD_ID=your_discord_user_id_here
      ```
    - Refer to the [Discord Developer Portal](https://discord.com/developers/docs/getting-started#configuring-your-bot) to learn how to obtain your Discord bot token.
-   - Learn how to find your Discord server's ID and channel ID in [this article](https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID).
+   
 
 5. **Run the Bot:** Start the bot by running the main Python script:
    

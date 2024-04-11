@@ -8,7 +8,6 @@ from utils.embed_utils import display_embed
 from tasks.tasks import Tasks
 
 class Events(commands.Cog):
-	channel_id = None
 	def __init__(self, bot: commands.Bot) -> None:
 		self.bot = bot
 		self.task_scheduler = TaskScheduler()
@@ -43,7 +42,6 @@ class Events(commands.Cog):
 					del_after=duration, 
 					color=discord.Color.dark_orange(), 
 					type='task',
-					channel_id=self.channel_id
 					)
 				await asyncio.sleep(duration)
 
@@ -56,7 +54,6 @@ class Events(commands.Cog):
 					color=discord.Color.pink(), 
 					del_after=86400, 
 					type='task',
-					channel_id=self.channel_id
 					)
 
 			self.task_scheduler.toggle_scheduler(True)

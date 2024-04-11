@@ -6,6 +6,9 @@ import os
 
 load_dotenv()
 
+# DISCORD TOKEN
+DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
+
 # Database's API URL (assuming you've deployed it to heroku using this API: 
 # https://github.com/f-andrei/fast-api-tasks-notes-crud)
 

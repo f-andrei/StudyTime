@@ -1,13 +1,10 @@
 import sqlite3
-
-
-DATABASE_PATH = "app\database\studytime.sqlite3"
+from config import DB_FILE
 
 
 def analyze_all_tables():
-    with sqlite3.connect(DATABASE_PATH) as conn:
+    with sqlite3.connect(DB_FILE) as conn:
         cur = conn.cursor()
-
         cur.execute("SELECT name FROM sqlite_master WHERE type='table';")
         tables = cur.fetchall()
 
@@ -20,7 +17,7 @@ def analyze_all_tables():
     return '\n'.join(result)
 
 def analyze_table(table_name):
-    with sqlite3.connect(DATABASE_PATH) as conn:
+    with sqlite3.connect(DB_FILE) as conn:
         cur = conn.cursor()
         cur.execute(f"PRAGMA table_info({table_name})")
         table_info = cur.fetchall()
@@ -61,3 +58,5 @@ def get_table_info(table_name):
     table_info_str = f"Table: {table_name}\n"
     table_info_str += "\n".join(table_info)
     return table_info_str
+
+

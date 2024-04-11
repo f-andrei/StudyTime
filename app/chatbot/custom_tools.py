@@ -5,12 +5,12 @@ from langchain_core.tools import BaseTool
 from .tools_functions import analyze_all_tables
 from typing import Type,  Any
 from utils.embed_utils import display_embed
+from config import DB_FILE
 import sqlite3
 import discord
 import asyncio
 
 
-DATABASE_PATH = "app\database\studytime.sqlite3"
 
 memory = ConversationBufferMemory(memory_key="chat_history")
 
@@ -28,7 +28,7 @@ class QueryData(BaseTool):
 
     def _run(self, query) -> tuple:
         try:
-            with sqlite3.connect(DATABASE_PATH) as conn:
+            with sqlite3.connect(DB_FILE) as conn:
                 cursor = conn.cursor()
 
                 # Execute the query

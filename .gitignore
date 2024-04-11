@@ -9,5 +9,5 @@ app\utils\__pycache__\__init__.cpython-311.pyc
 context.json
 notes.json
 app/database/history.json
-app/database/studytime.sqlite3
+
 

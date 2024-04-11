@@ -1,62 +1,36 @@
-from utils.dt_manager import DateTimeManager
-from database.notes_operations import get_note_by_id, save_note_to_database, update_note_in_database
-import json
-from typing import Optional
+import requests
+from config import DATABASE_API_URL
+from typing import Dict, Any
 
-dt_manager = DateTimeManager('America/Sao_Paulo')
-notes_path = 'database/notes.json'
+class Notes:
+    NOTE_CREATE_ROUTE = "note/create_note"
+    NOTE_GET_ROUTE = "note/get_note"
+    NOTE_GET_ALL_ROUTE = "note/get_all_notes"
+    NOTE_UPDATE_ROUTE = "note/update_note"
+    NOTE_DELETE_ROUTE = "note/delete_note"
+    
 
-
-class Note:
-    def create_note(
-            self,
-            name: str, 
-            description: str, 
-            links: Optional[str],
-            user_id: int,  
-    ) -> None:
-        try:
-            self.user_id = user_id
-            self.name = name
-            self.description = description
-            self.links = links
-            self.created_at = dt_manager.get_formatted_datetime_now()
-            save_note_to_database(self)
-            return True
-        except Exception as e:
-            print(f"Error creating note: {e}")
-            return False
-    def update_note(
-            self,
-            note_id: int,
-            name: Optional[str] = None,
-            description: Optional[str] = None,
-            links: Optional[str] = None,
-        ) -> None:
-
-        try:
-            self.name = name
-            self.description = description
-            self.links = links
-
-            existing_note = get_note_by_id(note_id)
-            existing_note = existing_note[0]
-            
-            if name is None:
-                self.name = existing_note[1]
-
-            if description is None:
-                self.description = existing_note[2]
-
-            if links is None:
-                self.links = existing_note[3]
-
-            update_note_in_database(
-                note_id, 
-                self.name, 
-                self.description, 
-                self.links)
-            return True
-        except Exception as e:
-            print(f"Error updating note: {e}")  
-            return False
+    def create_note(self, note_data: Dict[str, Any]) -> Dict[str, Any]:
+        url = "{}/{}".format(DATABASE_API_URL, self.NOTE_CREATE_ROUTE)
+        response = requests.post(url, json=note_data)
+        return response.json()
+    
+    def get_note(self, note_id: int) -> Dict[str, Any]:
+        url = "{}/{}/{}".format(DATABASE_API_URL, self.NOTE_GET_ROUTE, note_id)
+        response = requests.get(url)
+        return response.json()
+    
+    def get_all_notes(self, user_id: int) -> Dict[str, Any]:
+        url = "{}/{}/{}".format(DATABASE_API_URL, self.NOTE_GET_ALL_ROUTE, user_id)
+        response = requests.get(url)
+        return response.json()
+    
+    def update_note(self, note_data: Dict[str, Any], note_id: int) -> Dict[str, Any]:
+        url = "{}/{}/{}".format(DATABASE_API_URL, self.NOTE_UPDATE_ROUTE, note_id)
+        response = requests.put(url, json=note_data)
+        return response.json()
+        
+    def delete_note(self, note_id: int) -> Dict[str, Any]:
+        url = "{}/{}/{}".format(DATABASE_API_URL, self.NOTE_DELETE_ROUTE, note_id)
+        response = requests.delete(url)
+        return response.json()

@@ -60,7 +60,7 @@ class DaysToRepeatView(discord.ui.View):
         await interaction.response.edit_message(view=self)
 
     @discord.ui.button(label="Reset All", style=RED_STYLE)
-    async def reset_all(self, interaction: discord.Interaction) -> None:
+    async def reset_all(self, interaction: discord.Interaction, button) -> None:
         self.days.clear()
         for child in self.children:
             if isinstance(child, discord.ui.Button) and child.label != "Reset All":

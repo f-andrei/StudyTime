@@ -30,7 +30,7 @@ async def greet(ctx: commands.Context) -> None:
 async def help(ctx: commands.Context) -> None:
 	embed = discord.Embed(
 		title="StudyTime", 
-		color=discord.Color.dark_purple(), 
+		color=discord.Color.from_rgb(255, 255, 0),
 		description="""**Welcome to *StudyTime*!  
 		I'm here to assist you in managing your tasks and notes. 
 		You can also have a chat with ChatGPT-4 for free!	
@@ -86,7 +86,7 @@ async def all_tasks(ctx: commands.Context) -> None:
 			embed = discord.Embed(
 				title="Incorrect channel",
 				description="This is not your preferred channel. Would you like to change it?",
-				color=discord.Color.orange()
+				color=discord.Color.gold(240, 85, 58) 
 			)
 			view = WrongChannelView()
 			await ctx.send(embed=embed, view=view)
@@ -103,7 +103,7 @@ async def all_tasks(ctx: commands.Context) -> None:
 
 		if not tasks:
 			embed = discord.Embed(
-				colour=discord.Color.red(), 
+				colour=discord.Color.from_rgb(211, 211, 211),
 				title="You don't have any tasks yet!"
 				)
 			embed.add_field(
@@ -116,7 +116,7 @@ async def all_tasks(ctx: commands.Context) -> None:
 		await channel.send(
 			embed=discord.Embed(
 				title="Here are your tasks:", 
-				color=discord.Color.dark_blue()), 
+				color=discord.Color.from_rgb(52, 152, 219)),
 				delete_after=DELETE_AFTER
 				)
 		for task in tasks:
@@ -125,7 +125,7 @@ async def all_tasks(ctx: commands.Context) -> None:
 				title="Task", 
 				task_id=task["id"],
 				user_id=user_id,
-				color=discord.Color.from_rgb(68, 0, 229), 
+				color=discord.Color.from_rgb(46, 204, 113),
 				type='task'
 				)
 			view = EditTask(task)
@@ -160,7 +160,7 @@ async def all_notes(ctx: commands.Context) -> None:
 			embed = discord.Embed(
 				title="Incorrect channel",
 				description="This is not your preferred channel. Would you like to change it?",
-				color=discord.Color.orange()
+				color=discord.Color.from_rgb(240, 85, 58)
 			)
 			view = WrongChannelView()
 			await ctx.send(embed=embed, view=view)
@@ -179,7 +179,7 @@ async def all_notes(ctx: commands.Context) -> None:
 			await channel.send(
 				embed=discord.Embed(
 					title="Here are your notes:", 
-					color=discord.Color.blurple()), 
+					color=discord.Color.from_rgb(255, 127, 80)),
 					delete_after=DELETE_AFTER
 					)
 
@@ -188,7 +188,7 @@ async def all_notes(ctx: commands.Context) -> None:
 					data=note, 
 					title="Note", 
 					task_id=note["id"], 
-					color=discord.Color.from_rgb(68, 0, 229), 
+					color=discord.Color.from_rgb(0, 206, 209),
 					type='note',
 					user_id=user_id
 					)
@@ -202,7 +202,7 @@ async def all_notes(ctx: commands.Context) -> None:
 			return
 		else:
 			embed = discord.Embed(
-				colour=discord.Color.red(), 
+				colour=discord.Color.from_rgb(211, 211, 211), 
 				title="You don't have any notes yet!"
 				)
 			embed.add_field(
@@ -227,7 +227,7 @@ async def register(ctx: commands.Context) -> None:
 		user = user.create_user(user_data)
 		if user:
 			embed = discord.Embed(
-					colour=discord.Color.green(), 
+					colour=discord.Color.from_rgb(50, 205, 50),
 					title="User registered successfully!"
 					)
 			
@@ -251,7 +251,7 @@ async def set_channel(ctx: commands.Context) -> None:
 			user_id=user_id
 			)
 		embed = discord.Embed(
-				colour=discord.Color.green())
+				colour=discord.Color.from_rgb(0, 255, 0))
 		if channel_updated:
 			embed.title="Preferred channel updated successfully!"
 			await ctx.send(embed=embed)

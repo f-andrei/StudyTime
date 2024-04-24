@@ -44,8 +44,7 @@ class TaskModal(ui.Modal, title="Create task"):
 							)
 
 	async def on_submit(self, interaction: discord.Interaction) -> None:
-			embed = discord.Embed(title=self.title, color = discord.Color.blue())
-			embed.set_author(name=interaction.user, icon_url=interaction.user.avatar)
+			embed = discord.Embed(title=self.title)
 
 			user_id = interaction.user.id
 
@@ -66,17 +65,8 @@ class TaskModal(ui.Modal, title="Create task"):
 
 				embed_2 = discord.Embed(
 					title="Would you like to make this task repeat on multiple days?", 
-					color=discord.Color.blue()
+					color=discord.Color.from_rgb(255, 204, 153) 
 					)
-				for i, item in enumerate(task_data):
-					if item is None:
-						embed_2.title="Unable to create task. Missing fields or invalid data."
-						await interaction.response.send_message(
-														embed=embed_2, 
-														delete_after=DELETE_AFTER,
-														ephemeral=True
-														)
-						return
 			
 				task_created = task.create_task(task_data=task_data)
 				if 'detail' in task_created and task_created['detail'][0]['ctx']['error']:
@@ -161,6 +151,7 @@ class IsRepeatable(discord.ui.View):
 		button.disabled = True
 		days_button_view = DaysToRepeatView(self.task_data, self.task_id, self.msg_id, self.user_id)
 		self.embed.title = "Which days would you like it to repeat?"
+		self.embed.color = discord.Color.from_rgb(64, 224, 208)	
 		await interaction.response.edit_message(
 										embed=self.embed, 
 										delete_after=DELETE_AFTER
@@ -214,12 +205,12 @@ class EditTask(discord.ui.View):
 			deleted = task.delete_task(self.task_id)
 			if deleted:
 				self.embed.title = "Task sucessfully deleted!"
-				self.embed.color = discord.Color.red()
+				self.embed.color = discord.Color.from_rgb(176, 196, 222) 
 			else:
 				self.embed.title = "Unable to delete task!"
 		else:
 			self.embed.title = f"Task doesn't exist or is already deleted."
-			self.embed.color = discord.Color.red()
+			self.embed.color = discord.Color.from_rgb(211, 211, 211)
 		button.disabled = True
 		await interaction.response.send_message(embed=self.embed, ephemeral=True)
 		await interaction.followup.delete_message(self.msg_id)

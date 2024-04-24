@@ -240,6 +240,28 @@ async def register(ctx: commands.Context) -> None:
 		print(f"Error at register(): {e}")
 
 
+@bot.hybrid_command(name="set_channel", description="Sets current channel as preferred channel.")
+async def set_channel(ctx: commands.Context) -> None:
+	try:
+		user = User()
+		channel_id = ctx.channel.id
+		user_id = ctx.author.id
+		channel_updated = user.update_channel_id(
+			channel_id=channel_id, 
+			user_id=user_id
+			)
+		embed = discord.Embed(
+				colour=discord.Color.green())
+		if channel_updated:
+			embed.title="Preferred channel updated successfully!"
+			await ctx.send(embed=embed)
+		else:
+			embed.title("Sorry! We couldn't update the channel. Try again.")
+			await ctx.send(embed=embed)
+	except Exception as e:
+		print(f"Error at set_channel(): {e}")
+
+
 @bot.hybrid_command(name="chat", description="Chat with ChatGPT")
 async def chat(ctx: commands.Context) -> None:
 	"""Calls OpenAI's GPT API"""

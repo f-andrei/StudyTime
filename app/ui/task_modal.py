@@ -124,7 +124,7 @@ class TaskModal(ui.Modal, title="Create task"):
 														)
 				else:
 					embed.title = "Task updated!"
-					embed.description = None
+					embed.color = discord.Color.from_rgb(152, 251, 152)
 					await interaction.response.send_message(
 													embed=embed, 
 													delete_after=DELETE_AFTER,
@@ -179,7 +179,8 @@ class IsRepeatable(discord.ui.View):
 			title="Task created sucessfully!", 
 			del_after=86400, 
 			type='task',
-			user_id=self.user_id
+			user_id=self.user_id,
+			color=discord.Color.from_rgb(135, 206, 235)
 			)
 		await interaction.response.edit_message(view=self.clear_items())
 		await interaction.followup.delete_message(self.msg_id)

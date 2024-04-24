@@ -297,7 +297,6 @@ async def chat(ctx: commands.Context) -> None:
 # Sync new commands
 @bot.command()
 @commands.guild_only()
-@commands.is_owner()
 async def sync(
 	ctx: commands.Context, 
 	guilds: commands.Greedy[discord.Object], 

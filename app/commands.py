@@ -86,7 +86,7 @@ async def all_tasks(ctx: commands.Context) -> None:
 			embed = discord.Embed(
 				title="Incorrect channel",
 				description="This is not your preferred channel. Would you like to change it?",
-				color=discord.Color.gold(240, 85, 58) 
+				color=discord.Color.from_rgb(240, 85, 58) 
 			)
 			view = WrongChannelView()
 			await ctx.send(embed=embed, view=view)

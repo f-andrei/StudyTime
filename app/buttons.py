@@ -84,5 +84,22 @@ class DaysToRepeatView(discord.ui.View):
             type='task',
             user_id=self.user_id
             )
+        
+
+class WrongChannelView(discord.ui.View):
+    def __init__(self):
+        super().__init__()
+        self.confirmation = None
+
+    @discord.ui.button(label="No, continue", style=discord.ButtonStyle.blurple)
+    async def continue_(self, interaction: discord.Interaction, button) -> None:
+        button.disabled = True
+        self.confirmation = False   
+        await interaction.message.delete()
 
 
+    @discord.ui.button(label="Update channel", style=discord.ButtonStyle.success, custom_id="update_channel")
+    async def update_channel(self, interaction: discord.Interaction, button) -> None:
+        button.disabled = True
+        self.confirmation = True
+        await interaction.message.delete()

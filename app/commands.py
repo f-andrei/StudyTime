@@ -1,4 +1,5 @@
 import discord
+from buttons import WrongChannelView
 from notes.notes import Notes
 from users.users import User
 from config import bot, DELETE_AFTER, TIMEZONE, MESSAGE_DELAY
@@ -11,6 +12,7 @@ from ui.task_modal import  EditTask, TaskModal
 from ui.note_modal import EditNote, NoteModal
 from tasks.tasks import Tasks
 from typing import Optional, Literal
+from users.users import User
 
 
 dt_manager = DateTimeManager(TIMEZONE)
@@ -77,6 +79,28 @@ async def all_tasks(ctx: commands.Context) -> None:
 		user_id = ctx.author.id
 		tasks = Tasks()
 		tasks = tasks.get_all_tasks(user_id=user_id)
+
+		user = User()
+		current_channel_id = ctx.channel.id
+		if current_channel_id != int(user.get_channel_id(user_id=str(user_id))):
+			embed = discord.Embed(
+				title="Incorrect channel",
+				description="This is not your preferred channel. Would you like to change it?",
+				color=discord.Color.orange()
+			)
+			view = WrongChannelView()
+			await ctx.send(embed=embed, view=view)
+			await bot.wait_for(
+				'interaction', 
+				check=lambda interaction: interaction.data["component_type"] == 2 
+				and "custom_id" in interaction.data.keys()
+				)
+			if view.confirmation:
+				user.update_channel_id(channel_id=current_channel_id, user_id=user_id)
+
+		channel_id = user.get_channel_id(user_id=user_id)
+		channel = bot.get_channel(int(channel_id))
+
 		if not tasks:
 			embed = discord.Embed(
 				colour=discord.Color.red(), 
@@ -87,10 +111,14 @@ async def all_tasks(ctx: commands.Context) -> None:
 				value=f"```/create_task```", 
 				inline=False
 				)
-			await ctx.send(embed=embed, ephemeral=True)
+			await channel.send(embed=embed)
 		
-		await ctx.send("Here's your tasks: ", delete_after=DELETE_AFTER, ephemeral=True)
-
+		await channel.send(
+			embed=discord.Embed(
+				title="Here are your tasks:", 
+				color=discord.Color.dark_blue()), 
+				delete_after=DELETE_AFTER
+				)
 		for task in tasks:
 			await display_embed(
 				data=task, 
@@ -101,10 +129,9 @@ async def all_tasks(ctx: commands.Context) -> None:
 				type='task'
 				)
 			view = EditTask(task)
-			msg: discord.Message = await ctx.send(
+			msg: discord.Message = await channel.send(
 											view=view, 
-											delete_after=DELETE_AFTER,
-											ephemeral=True
+											delete_after=DELETE_AFTER
 											)
 			view.msg_id = msg.id
 			sleep(MESSAGE_DELAY)
@@ -126,8 +153,35 @@ async def all_notes(ctx: commands.Context) -> None:
 		user_id = ctx.author.id
 		notes = Notes()
 		all_notes = notes.get_all_notes(user_id)
+
+		user = User()
+		current_channel_id = ctx.channel.id
+		if current_channel_id != int(user.get_channel_id(user_id=str(user_id))):
+			embed = discord.Embed(
+				title="Incorrect channel",
+				description="This is not your preferred channel. Would you like to change it?",
+				color=discord.Color.orange()
+			)
+			view = WrongChannelView()
+			await ctx.send(embed=embed, view=view)
+			await bot.wait_for(
+				'interaction', 
+				check=lambda interaction: interaction.data["component_type"] == 2 
+				and "custom_id" in interaction.data.keys()
+				)
+			if view.confirmation:
+				user.update_channel_id(channel_id=current_channel_id, user_id=user_id)
+
+		channel_id = user.get_channel_id(user_id=user_id)
+		channel = bot.get_channel(int(channel_id))
+
 		if all_notes:
-			await ctx.send("Here are your notes:", delete_after=DELETE_AFTER, ephemeral=True)
+			await channel.send(
+				embed=discord.Embed(
+					title="Here are your notes:", 
+					color=discord.Color.blurple()), 
+					delete_after=DELETE_AFTER
+					)
 
 			for note in all_notes:
 				await display_embed(
@@ -139,10 +193,9 @@ async def all_notes(ctx: commands.Context) -> None:
 					user_id=user_id
 					)
 				view = EditNote(note)
-				msg: discord.Message = await ctx.send(
+				msg: discord.Message = await channel.send(
 														view=view, 
-														delete_after=DELETE_AFTER,
-														ephemeral=True
+														delete_after=DELETE_AFTER
 														)
 				view.msg_id = msg.id
 				sleep(MESSAGE_DELAY)
@@ -155,7 +208,7 @@ async def all_notes(ctx: commands.Context) -> None:
 			embed.add_field(
 				name=f"Create one using:", value=f"```/create_note```", inline=False
 				)
-			await ctx.send(embed=embed, ephemeral=True)
+			await channel.send(embed=embed, ephemeral=True)
 	except Exception as e:
 		print(f"Error at all_notes(): {e}")
 

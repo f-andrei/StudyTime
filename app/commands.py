@@ -112,6 +112,7 @@ async def all_tasks(ctx: commands.Context) -> None:
 				inline=False
 				)
 			await channel.send(embed=embed)
+			return
 		
 		await channel.send(
 			embed=discord.Embed(

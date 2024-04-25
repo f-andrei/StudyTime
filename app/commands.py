@@ -208,7 +208,7 @@ async def all_notes(ctx: commands.Context) -> None:
 			embed.add_field(
 				name=f"Create one using:", value=f"```/create_note```", inline=False
 				)
-			await channel.send(embed=embed, ephemeral=True)
+			await channel.send(embed=embed)
 	except Exception as e:
 		print(f"Error at all_notes(): {e}")
 

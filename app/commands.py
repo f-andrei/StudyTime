@@ -76,11 +76,14 @@ async def create_task(interaction: discord.Interaction) -> None:
 async def all_tasks(ctx: commands.Context) -> None:
 	"""List all active tasks"""
 	try:
+		await ctx.defer(delete_after=DELETE_AFTER)
+
 		user_id = ctx.author.id
+		user = User()
+		
 		tasks = Tasks()
 		tasks = tasks.get_all_tasks(user_id=user_id)
 
-		user = User()
 		current_channel_id = ctx.channel.id
 		if current_channel_id != int(user.get_channel_id(user_id=str(user_id))):
 			embed = discord.Embed(
@@ -136,8 +139,6 @@ async def all_tasks(ctx: commands.Context) -> None:
 											)
 			view.msg_id = msg.id
 			sleep(MESSAGE_DELAY)
-		await ctx.defer(delete_after=DELETE_AFTER)
-		
 	except Exception as e:
 		print(f"Error in all_tasks(): {e}")
 
@@ -152,11 +153,14 @@ async def create_note(interaction: discord.Interaction) -> None:
 @bot.hybrid_command(name="notes", description="List, update or delete notes.")
 async def all_notes(ctx: commands.Context) -> None:
 	try:
+		await ctx.defer(delete_after=DELETE_AFTER)
+
 		user_id = ctx.author.id
+		user = User()
+
 		notes = Notes()
 		all_notes = notes.get_all_notes(user_id)
-
-		user = User()
+		
 		current_channel_id = ctx.channel.id
 		if current_channel_id != int(user.get_channel_id(user_id=str(user_id))):
 			embed = discord.Embed(
@@ -201,7 +205,6 @@ async def all_notes(ctx: commands.Context) -> None:
 														)
 				view.msg_id = msg.id
 				sleep(MESSAGE_DELAY)
-			await ctx.defer(delete_after=DELETE_AFTER)
 		else:
 			embed = discord.Embed(
 				colour=discord.Color.from_rgb(211, 211, 211), 

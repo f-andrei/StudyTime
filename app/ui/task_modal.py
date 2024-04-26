@@ -74,8 +74,7 @@ class TaskModal(ui.Modal, title="Create task"):
 					print(f"Error creating task: {task_created['detail'][0]['ctx']['error']}")
 					await interaction.response.send_message(
 													embed=embed_2, 
-													delete_after=DELETE_AFTER, 
-													ephemeral=True
+													delete_after=DELETE_AFTER
 													)
 					return
 
@@ -84,8 +83,7 @@ class TaskModal(ui.Modal, title="Create task"):
 				await interaction.response.defer(thinking=True)
 				msg:discord.Message = await interaction.followup.send(
 																	embed=embed_2, 
-																	view=button_view, 
-																	ephemeral=True
+																	view=button_view
 																	)
 				button_view.msg_id = msg.id
 
@@ -119,16 +117,14 @@ class TaskModal(ui.Modal, title="Create task"):
 					embed.description = None
 					await interaction.response.send_message(
 														embed=embed, 
-														delete_after=DELETE_AFTER,
-														ephemeral=True
+														delete_after=DELETE_AFTER
 														)
 				else:
 					embed.title = "Task updated!"
 					embed.color = discord.Color.from_rgb(152, 251, 152)
 					await interaction.response.send_message(
 													embed=embed, 
-													delete_after=DELETE_AFTER,
-													ephemeral=True
+													delete_after=DELETE_AFTER
 													)
 					
 
@@ -213,5 +209,5 @@ class EditTask(discord.ui.View):
 			self.embed.title = f"Task doesn't exist or is already deleted."
 			self.embed.color = discord.Color.from_rgb(211, 211, 211)
 		button.disabled = True
-		await interaction.response.send_message(embed=self.embed, ephemeral=True)
+		await interaction.response.send_message(embed=self.embed)
 		await interaction.followup.delete_message(self.msg_id)

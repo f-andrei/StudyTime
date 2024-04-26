@@ -48,8 +48,7 @@ class NoteModal(ui.Modal, title='Create note'):
                 embed.color=discord.Color.red()
                 await interaction.response.send_message(
                                                 embed=embed, 
-                                                delete_after=DELETE_AFTER,
-                                                ephemeral=True
+                                                delete_after=DELETE_AFTER
                                                 )
                 return
             
@@ -79,16 +78,14 @@ class NoteModal(ui.Modal, title='Create note'):
                 embed.color=discord.Color.red()
                 await interaction.response.send_message(
                                                 embed=embed, 
-                                                delete_after=DELETE_AFTER,
-                                                ephemeral=True
+                                                delete_after=DELETE_AFTER
                                                 )
             else:
                 embed.title = "Note updated!"
                 embed.color=discord.Color.from_rgb(211, 211, 211)
                 await interaction.response.send_message(
                                                 embed=embed, 
-                                                delete_after=DELETE_AFTER,
-                                                ephemeral=True
+                                                delete_after=DELETE_AFTER
                                                 )
 
 
@@ -112,7 +109,7 @@ class EditNote(discord.ui.View):
             await interaction.followup.delete_message(self.msg_id)
         else:
             self.embed.title = "Note not found."
-            await interaction.response.send_message(embed=self.embed, ephemeral=True)
+            await interaction.response.send_message(embed=self.embed)
             
     @discord.ui.button(label="Delete", style=RED_STYLE)
     async def delete(self, interaction: discord.Interaction, button) -> None:
@@ -128,5 +125,5 @@ class EditNote(discord.ui.View):
             self.embed.color = discord.Color.from_rgb(176, 224, 230)
             
         button.disabled = True
-        await interaction.response.send_message(embed=self.embed, ephemeral=True)
+        await interaction.response.send_message(embed=self.embed)
         await interaction.followup.delete_message(self.msg_id)

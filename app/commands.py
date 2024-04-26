@@ -136,6 +136,7 @@ async def all_tasks(ctx: commands.Context) -> None:
 											)
 			view.msg_id = msg.id
 			sleep(MESSAGE_DELAY)
+		await ctx.defer(delete_after=DELETE_AFTER)
 		
 	except Exception as e:
 		print(f"Error in all_tasks(): {e}")
@@ -200,7 +201,7 @@ async def all_notes(ctx: commands.Context) -> None:
 														)
 				view.msg_id = msg.id
 				sleep(MESSAGE_DELAY)
-			return
+			await ctx.defer(delete_after=DELETE_AFTER)
 		else:
 			embed = discord.Embed(
 				colour=discord.Color.from_rgb(211, 211, 211), 
@@ -218,6 +219,13 @@ async def all_notes(ctx: commands.Context) -> None:
 async def register(ctx: commands.Context) -> None:
 	try:
 		user = User()
+		if user.get_user(str(ctx.author.id)):
+			embed = discord.Embed(
+				colour=discord.Color.from_rgb(255, 0, 0),
+				title="You are already registered!"
+				)
+			await ctx.send(embed=embed)
+			return
 		user_data = {
 			"id": str(ctx.author.id),
 			"username": str(ctx.author.name),
@@ -235,7 +243,7 @@ async def register(ctx: commands.Context) -> None:
 			embed.add_field(name=f"Username", value=f"```{user['username']}```", inline=False)
 			embed.add_field(name=f"Server", value=f"```{ctx.guild.name}```", inline=False)
 			embed.add_field(name=f"Preferred channel", value=f"```{ctx.channel.name}```", inline=False)
-			await ctx.send(embed=embed, ephemeral=True)
+			await ctx.send(embed=embed)
 
 	except Exception as e:
 		print(f"Error at register(): {e}")
@@ -267,7 +275,7 @@ async def set_channel(ctx: commands.Context) -> None:
 async def chat(ctx: commands.Context) -> None:
 	"""Calls OpenAI's GPT API"""
 	try:
-		await ctx.send('Conversation started. Type "leave" to exit conversation.', ephemeral=True)
+		await ctx.send('Conversation started. Type "leave" to exit conversation.')
 		while True:
 			while True:
 				msg = await bot.wait_for("message")
@@ -283,14 +291,14 @@ async def chat(ctx: commands.Context) -> None:
 					gpt_response = await invoke_chat(user_message, user_id)
 					if gpt_response ==  error_response:
 						gpt_response = "Sorry, I could not find an answer."
-						await ctx.send(gpt_response, ephemeral=True)
+						await ctx.send(gpt_response)
 					else:
-						await ctx.send(gpt_response, ephemeral=True)
+						await ctx.send(gpt_response)
 				except Exception as e:
 					print(f"Agent error: {e}")
 					
 			else:
-				await ctx.send("You left the chat.", ephemeral=True)
+				await ctx.send("You left the chat.")
 	except Exception as e:
 		print(f"Error at chat(): {e}")
 

@@ -76,7 +76,7 @@ async def create_task(interaction: discord.Interaction) -> None:
 async def all_tasks(ctx: commands.Context) -> None:
 	"""List all active tasks"""
 	try:
-		await ctx.reply(silent=True)
+		await ctx.reply("Processing...", delete_after=1)
 
 		user_id = ctx.author.id
 		user = User()
@@ -153,7 +153,8 @@ async def create_note(interaction: discord.Interaction) -> None:
 @bot.hybrid_command(name="notes", description="List, update or delete notes.")
 async def all_notes(ctx: commands.Context) -> None:
 	try:
-		await ctx.reply(silent=True)
+		await ctx.reply("Processing...", delete_after=1)
+
 
 		user_id = ctx.author.id
 		user = User()

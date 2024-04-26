@@ -1,10 +1,13 @@
 from langchain_openai import ChatOpenAI
 import discord
 from discord.ext import commands
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 import os
 
-load_dotenv()
+load_dotenv(find_dotenv())
+
+# DISCORD TOKEN
+DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 
 # Database's API URL (assuming you've deployed it to heroku using this API: 
 # https://github.com/f-andrei/fast-api-tasks-notes-crud)

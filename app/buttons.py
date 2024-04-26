@@ -60,7 +60,7 @@ class DaysToRepeatView(discord.ui.View):
         await interaction.response.edit_message(view=self)
 
     @discord.ui.button(label="Reset All", style=RED_STYLE)
-    async def reset_all(self, interaction: discord.Interaction) -> None:
+    async def reset_all(self, interaction: discord.Interaction, button) -> None:
         self.days.clear()
         for child in self.children:
             if isinstance(child, discord.ui.Button) and child.label != "Reset All":
@@ -84,5 +84,22 @@ class DaysToRepeatView(discord.ui.View):
             type='task',
             user_id=self.user_id
             )
+        
+
+class WrongChannelView(discord.ui.View):
+    def __init__(self):
+        super().__init__()
+        self.confirmation = None
+
+    @discord.ui.button(label="No, continue", style=discord.ButtonStyle.blurple)
+    async def continue_(self, interaction: discord.Interaction, button) -> None:
+        button.disabled = True
+        self.confirmation = False   
+        await interaction.message.delete()
 
 
+    @discord.ui.button(label="Update channel", style=discord.ButtonStyle.success, custom_id="update_channel")
+    async def update_channel(self, interaction: discord.Interaction, button) -> None:
+        button.disabled = True
+        self.confirmation = True
+        await interaction.message.delete()

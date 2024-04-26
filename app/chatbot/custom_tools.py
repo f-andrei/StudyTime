@@ -5,11 +5,15 @@ from langchain_core.tools import BaseTool
 from .tools_functions import analyze_all_tables
 from typing import Type,  Any
 from utils.embed_utils import display_embed
-from config import DB_FILE
 import sqlite3
 import discord
 import asyncio
+import os
 
+ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_DIR = 'database'
+DB_NAME = 'studytime.sqlite3'
+DB_FILE = os.path.join(ROOT_DIR, DB_DIR, DB_NAME)
 
 
 memory = ConversationBufferMemory(memory_key="chat_history")

@@ -40,7 +40,7 @@ class Events(commands.Cog):
 					title="Task is due!", 
 					user_id=task["user_id"], 
 					del_after=duration, 
-					color=discord.Color.dark_orange(), 
+					color=discord.Color.from_rgb(255, 92, 80),
 					type='task',
 					)
 				await asyncio.sleep(duration)
@@ -51,7 +51,7 @@ class Events(commands.Cog):
 					data=task, 
 					title=title, 
 					user_id=task["user_id"], 
-					color=discord.Color.pink(), 
+					color=discord.Color.from_rgb(46, 204, 113),
 					del_after=86400, 
 					type='task',
 					)

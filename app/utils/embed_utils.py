@@ -1,4 +1,3 @@
-from discord.ext import commands
 from utils.dt_manager import DateTimeManager
 import discord
 from config import DELETE_AFTER, bot
@@ -84,7 +83,7 @@ async def display_embed(
         delete_time = DELETE_AFTER
     
     user = User()
-    channel_id = user.get_channel_id(user_id=user_id)
+    channel_id = user.get_channel_id(user_id=str(user_id))
     if channel_id:
         channel = bot.get_channel(int(channel_id))
         await channel.send(embed=embed, delete_after=delete_time)

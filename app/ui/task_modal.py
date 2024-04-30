@@ -47,86 +47,93 @@ class TaskModal(ui.Modal, title="Create task"):
 			embed = discord.Embed(title=self.title)
 
 			user_id = interaction.user.id
+			try:
+				if self.action == "create":
+					self.start_date = str(self.start_date)
+					self.start_date = self.start_date.split(" ")
+					self.time = self.start_date[1]
+					self.start_date = self.start_date[0]
+					task_data = {
+						"name": str(self.name),
+						"description": str(self.description),
+						"links": str(self.links),
+						"start_date": str(self.start_date),
+						"time": str(self.time),
+						"duration": float(str(self.duration)),
+						"user_id": str(user_id)
+					}
 
-			if self.action == "create":
-				self.start_date = str(self.start_date)
-				self.start_date = self.start_date.split(" ")
-				self.time = self.start_date[1]
-				self.start_date = self.start_date[0]
-				task_data = {
-					"name": str(self.name),
-					"description": str(self.description),
-					"links": str(self.links),
-					"start_date": str(self.start_date),
-					"time": str(self.time),
-					"duration": float(str(self.duration)),
-					"user_id": str(user_id)
-				}
-
-				embed_2 = discord.Embed(
-					title="Would you like to make this task repeat on multiple days?", 
-					color=discord.Color.from_rgb(255, 204, 153) 
-					)
-			
-				task_created = task.create_task(task_data=task_data)
-				if 'detail' in task_created and task_created['detail'][0]['ctx']['error']:
-					embed_2.title = "Unable to create task. Missing fields or invalid data."
-					print(f"Error creating task: {task_created['detail'][0]['ctx']['error']}")
-					await interaction.response.send_message(
-													embed=embed_2, 
-													delete_after=DELETE_AFTER
-													)
-					return
-
-				self.task_id = task_created["id"]
-				button_view=IsRepeatable(embed_2, task_data, self.task_id, self.start_date, self.user_id)
-				await interaction.response.defer(thinking=True)
-				msg:discord.Message = await interaction.followup.send(
-																	embed=embed_2, 
-																	view=button_view
-																	)
-				button_view.msg_id = msg.id
-
-			if self.action == 'update':
-				task_data = {}
-				time = None
-				field_names = ["name", "description", "links", "start_date", "duration"]
-				fields_values = [
-					self.name, 
-					self.description, 
-					self.links, 
-					self.start_date, 
-					self.duration
-					]
-
-				for field_name, field_value in zip(field_names, fields_values):
-					field_value = str(field_value)
-					if field_value is not None and field_value.strip() != "":
-						if field_name == "start_date":
-							start_date, time = field_value.split(" ")
-							task_data["start_date"] = start_date
-							task_data["time"] = time
-						else:
-							task_data[field_name] = field_value
-
-				task_updated = task.update_task(task_data=task_data, task_id=self.task_id)
-
-
-				if not task_updated:
-					embed.title = "Unable to update task. Invalid data format."
-					embed.description = None
-					await interaction.response.send_message(
-														embed=embed, 
-														delete_after=DELETE_AFTER
-														)
-				else:
-					embed.title = "Task updated!"
-					embed.color = discord.Color.from_rgb(152, 251, 152)
-					await interaction.response.send_message(
-													embed=embed, 
-													delete_after=DELETE_AFTER
-													)
+					embed_2 = discord.Embed(
+						title="Would you like to make this task repeat on multiple days?", 
+						color=discord.Color.from_rgb(255, 204, 153) 
+						)
+				
+					task_created = task.create_task(task_data=task_data)
 					
+					self.task_id = task_created["id"]
+					button_view=IsRepeatable(embed_2, task_data, self.task_id, self.start_date, self.user_id)
+					await interaction.response.defer(thinking=True)
+					msg:discord.Message = await interaction.followup.send(
+																		embed=embed_2, 
+																		view=button_view, 
+																		ephemeral=True
+																		)
+					button_view.msg_id = msg.id
+			except Exception as e:
+				embed = discord.Embed(title="Unable to create task. Missing fields or invalid data.")
+				print(e)
+				await interaction.response.send_message(
+														embed=embed, 
+														delete_after=DELETE_AFTER, 
+														ephemeral=True
+														)
+			try:	
+				if self.action == 'update':
+					task_data = {}
+					time = None
+					field_names = ["name", "description", "links", "start_date", "duration"]
+					fields_values = [
+						self.name, 
+						self.description, 
+						self.links, 
+						self.start_date, 
+						self.duration
+						]
+
+					for field_name, field_value in zip(field_names, fields_values):
+						field_value = str(field_value)
+						if field_value is not None and field_value.strip() != "":
+							if field_name == "start_date":
+								start_date, time = field_value.split(" ")
+								task_data["start_date"] = start_date
+								task_data["time"] = time
+							else:
+								task_data[field_name] = field_value
+
+					task_updated = task.update_task(task_data=task_data, task_id=self.task_id)
+					if 'detail' in task_updated:
+						embed = discord.Embed(title="Unable to update task. Invalid duration.")
+						await interaction.response.send_message(
+													embed=embed, 
+													delete_after=DELETE_AFTER, 
+													ephemeral=True
+													) 
+					else:
+						embed.title = "Task updated!"
+						embed.color = discord.Color.from_rgb(152, 251, 152)
+						await interaction.response.send_message(
+														embed=embed, 
+														delete_after=DELETE_AFTER,
+														ephemeral=True
+														)
+			except ValueError:
+				embed = discord.Embed(title="Unable to update task. Invalid datetime.")
+				await interaction.response.send_message(
+													embed=embed, 
+													delete_after=DELETE_AFTER, 
+													ephemeral=True
+													)
+				
 
 class IsRepeatable(discord.ui.View):
 	msg_id = None
@@ -209,5 +216,5 @@ class EditTask(discord.ui.View):
 			self.embed.title = f"Task doesn't exist or is already deleted."
 			self.embed.color = discord.Color.from_rgb(211, 211, 211)
 		button.disabled = True
-		await interaction.response.send_message(embed=self.embed)
+		await interaction.response.send_message(embed=self.embed, ephemeral=True)
 		await interaction.followup.delete_message(self.msg_id)

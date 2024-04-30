@@ -283,30 +283,31 @@ async def set_channel(ctx: commands.Context) -> None:
 async def chat(ctx: commands.Context) -> None:
 	"""Calls OpenAI's GPT API"""
 	try:
-		await ctx.send('Conversation started. Type "leave" to exit conversation.')
-		while True:
-			while True:
-				msg = await bot.wait_for("message")
-				if (msg.author == ctx.author):
-					user_message = msg.content
-					user_message = str(user_message)
-					break
+		await ctx.send("Maintenance in progress. Please try again later.")
+		# await ctx.send('Conversation started. Type "leave" to exit conversation.')
+		# while True:
+		# 	while True:
+		# 		msg = await bot.wait_for("message")
+		# 		if (msg.author == ctx.author):
+		# 			user_message = msg.content
+		# 			user_message = str(user_message)
+		# 			break
 			
-			if not user_message.lower() == 'leave':
-				try:
-					user_id = msg.author.id
-					error_response = 'Agent stopped due to iteration limit or time limit.'
-					gpt_response = await invoke_chat(user_message, user_id)
-					if gpt_response ==  error_response:
-						gpt_response = "Sorry, I could not find an answer."
-						await ctx.send(gpt_response)
-					else:
-						await ctx.send(gpt_response)
-				except Exception as e:
-					print(f"Agent error: {e}")
+		# 	if not user_message.lower() == 'leave':
+		# 		try:
+		# 			user_id = msg.author.id
+		# 			error_response = 'Agent stopped due to iteration limit or time limit.'
+		# 			gpt_response = await invoke_chat(user_message, user_id)
+		# 			if gpt_response ==  error_response:
+		# 				gpt_response = "Sorry, I could not find an answer."
+		# 				await ctx.send(gpt_response)
+		# 			else:
+		# 				await ctx.send(gpt_response)
+		# 		except Exception as e:
+		# 			print(f"Agent error: {e}")
 					
-			else:
-				await ctx.send("You left the chat.")
+		# 	else:
+		# 		await ctx.send("You left the chat.")
 	except Exception as e:
 		print(f"Error at chat(): {e}")
 

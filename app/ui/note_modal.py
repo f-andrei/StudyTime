@@ -55,7 +55,7 @@ class NoteModal(ui.Modal, title='Create note'):
             await display_embed(
                 data=note_data, 
                 type='note', 
-                title="Note created sucessfully!",
+                title="Note created successfully!",
                 user_id=self.user_id,
                 color=discord.Color.from_rgb(250, 250, 210)
                 )
@@ -116,7 +116,7 @@ class EditNote(discord.ui.View):
         if self.note:
             deleted = notes.delete_note(self.note_id)
             if deleted:
-                self.embed.title = "Note sucessfully deleted!"
+                self.embed.title = "Note successfully deleted!"
                 self.embed.color = discord.Color.from_rgb(176, 196, 222)
             else:
                 self.embed.title = "Unable to delete note!"

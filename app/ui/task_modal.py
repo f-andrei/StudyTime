@@ -174,7 +174,7 @@ class IsRepeatable(discord.ui.View):
 		await display_embed(
 			data=self.task_data, 
 			task_id=last_task_id, 
-			title="Task created sucessfully!", 
+			title="Task created successfully!", 
 			del_after=86400, 
 			type='task',
 			user_id=self.user_id,
@@ -203,7 +203,7 @@ class EditTask(discord.ui.View):
 		if self.task:
 			deleted = task.delete_task(self.task_id)
 			if deleted:
-				self.embed.title = "Task sucessfully deleted!"
+				self.embed.title = "Task successfully deleted!"
 				self.embed.color = discord.Color.from_rgb(176, 196, 222) 
 			else:
 				self.embed.title = "Unable to delete task!"

@@ -83,7 +83,7 @@ class CreateEmbed(BaseTool):
                 embed_type = 'note'
             asyncio.create_task(self.async_display_embed(query_output, embed_type))
             memory.chat_memory.add_ai_message('Embed created')
-            return 'Embed sucessfully created'
+            return 'Embed successfully created'
         except Exception as e:
             return f"An error occurred while creating an embed: {e}"
         

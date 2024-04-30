@@ -2,7 +2,6 @@ from langchain.memory import ConversationBufferMemory
 from langchain_core.pydantic_v1 import BaseModel, Field
 from langchain.agents import Tool
 from langchain_core.tools import BaseTool
-from .tools_functions import analyze_all_tables
 from typing import Type,  Any
 from utils.embed_utils import display_embed
 import sqlite3
@@ -56,9 +55,7 @@ class DatabaseInfo(BaseTool):
     
     def _run(self, _=None) -> str:
         try:
-            database_schema_string = analyze_all_tables()
-            memory.chat_memory.add_ai_message(database_schema_string)
-            return database_schema_string
+            memory.chat_memory.add_ai_message()
         except Exception as e:
             return f"Error occurred while retrieving database information: {e}"
 

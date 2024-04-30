@@ -163,6 +163,9 @@ class IsRepeatable(discord.ui.View):
 	
 	@discord.ui.button(label="No, thanks!", style=GRAY_STYLE)
 	async def no(self, interaction: discord.Interaction, button) -> None:
+		await interaction.response.edit_message(view=self.clear_items())
+		await interaction.followup.delete_message(self.msg_id)
+
 		self.is_repeatable = False
 		button.disabled = True
 		day_number = dt_manager.get_day_number(str(self.start_date))
@@ -180,8 +183,6 @@ class IsRepeatable(discord.ui.View):
 			user_id=self.user_id,
 			color=discord.Color.from_rgb(135, 206, 235)
 			)
-		await interaction.response.edit_message(view=self.clear_items())
-		await interaction.followup.delete_message(self.msg_id)
 
 
 class EditTask(discord.ui.View):

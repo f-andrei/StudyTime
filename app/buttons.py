@@ -79,7 +79,7 @@ class DaysToRepeatView(discord.ui.View):
         await display_embed(
             data=self.task_data, 
             task_id=self.task_id, 
-            title="Task created sucessfully!", 
+            title="Task created successfully!", 
             del_after=86400, 
             type='task',
             user_id=self.user_id

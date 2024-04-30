@@ -55,6 +55,9 @@ async def help(ctx: commands.Context) -> None:
 	embed.add_field(
 		name="**Have a chat with GPT**", value="```/chat```", inline=False
 		)
+	embed.add_field(
+		name="**Set current channel as preferred channel**", value="```/set_channel```", inline=False
+	)
 	
 	embed.set_image(url="https://i.ibb.co/P9r1r6K/Study.png")
 	embed.set_thumbnail(url="https://i.ibb.co/rvZh9FC/studytime.png")
@@ -69,6 +72,7 @@ async def help(ctx: commands.Context) -> None:
 async def create_task(interaction: discord.Interaction) -> None:
 	"""creates a task"""
 	user_id = interaction.user.id
+
 	await interaction.response.send_modal(TaskModal(action="create", user_id=user_id))
 
 
@@ -350,6 +354,5 @@ async def delete_commands(ctx: commands.Context):
     bot.tree.clear_commands(guild=None)
     await bot.tree.sync()
     await ctx.send('Commands deleted.')
-
 
 

@@ -24,7 +24,7 @@ OPENAI_API_KEY = os.getenv("OPENAI_TOKEN")
 TIMEZONE = 'America/Sao_Paulo'
 
 # Time for Bot messages to get deleted
-DELETE_AFTER = 180
+DELETE_AFTER = 300
 # Delay for listing tasks/notes
 MESSAGE_DELAY = 0.5
 # Discord's task loop interval for checking new tasks

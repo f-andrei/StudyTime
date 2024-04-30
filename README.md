@@ -24,6 +24,10 @@ The StudyTime Discord Bot is an application developed for Discord with the aim o
 6. **Help**
    - **/help** Contains all commands.
 
+7. **/set_channel** Set preferred channel for bot messages.
+
+8. **.sync *** Syncs all commands to a new server (credit to AbstractUmbra: https://about.abstractumbra.dev/discord.py/2023/01/29/sync-command-example.html)
+
 ## Installation Guide
 
 1. **Clone the Repository:**

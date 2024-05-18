@@ -26,7 +26,7 @@ The StudyTime Discord Bot is an application developed for Discord with the aim o
 
 7. **/set_channel** Set preferred channel for bot messages.
 
-8. **.sync *** Syncs all commands to a new server (credit to AbstractUmbra: https://about.abstractumbra.dev/discord.py/2023/01/29/sync-command-example.html)
+8. **.sync ** Syncs all commands to a new server (credit to AbstractUmbra: https://about.abstractumbra.dev/discord.py/2023/01/29/sync-command-example.html)
 
 ## Installation Guide
 
@@ -64,8 +64,10 @@ The StudyTime Discord Bot is an application developed for Discord with the aim o
     ```bash
     python main.py
     ```
-
-6. **Invite the Bot to Your Discord Server:**
+6. **Set up Studytime database API**:
+   - Access the API repository and follow the installation guide: [studytime-db-api](https://github.com/f-andrei/studytime-db-api)
+     
+7. **Invite the Bot to Your Discord Server:**
    - Visit the Discord Developer Portal and create a new application.
    - Add a bot to your application and copy the bot token.
    - Use the bot token to invite the bot to your Discord server using the following link (replace `<YOUR_BOT_CLIENT_ID>` with your bot's client ID):
@@ -74,5 +76,5 @@ The StudyTime Discord Bot is an application developed for Discord with the aim o
      https://discord.com/oauth2/authorize?client_id=<YOUR_BOT_CLIENT_ID>&scope=bot
      ```
 
-7. **Enjoy Using the StudyTime Discord Bot!** You can now use the bot's commands and features on your Discord server.
+8. **Enjoy Using the StudyTime Discord Bot!** You can now use the bot's commands and features on your Discord server.
 

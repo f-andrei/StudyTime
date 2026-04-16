@@ -20,7 +20,7 @@ jsonpointer==2.4
 langchain==0.2.5
 langchain-community==0.3.27
 langchain-core==1.2.22
-langchain-openai==0.0.6
+langchain-openai==1.1.14
 langsmith==0.0.87
 loguru==0.7.2
 marshmallow==3.26.2
